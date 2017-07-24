@@ -1,3 +1,4 @@
+import os
 import flask
 import flask_sqlalchemy as alchemy
 import flask_security as security
@@ -9,7 +10,7 @@ app = flask.Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SECURITY_PASSWORD_SALT'] = 'not-actually-a-salt'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'bestvods.db')
 
 # Create database connection object
 db = alchemy.SQLAlchemy(app)
@@ -31,7 +32,6 @@ class User(db.Model, security.UserMixin):
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
-    confirmed_at = db.Column(db.DateTime())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -43,9 +43,11 @@ security = security.Security(app, user_datastore)
 # Create a user to test with
 @app.before_first_request
 def create_user():
-    db.create_all()
-    user_datastore.create_user(email='matt@nobien.net', password='password')
-    db.session.commit()
+    result = db.engine.execute("select * from user where email = 'matt@nobien.net'").fetchone()
+    if result is None:
+        print('Adding test user matt@nobien.net')
+        user_datastore.create_user(email='matt@nobien.net', password='password')
+        db.session.commit()
     pass
 
 
