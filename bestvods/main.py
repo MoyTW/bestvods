@@ -5,15 +5,27 @@ import flask_security as security
 # Decorators don't play nicely with namespaces it seems
 from flask_security import login_required
 
-# Create app
-app = flask.Flask(__name__)
-app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = 'super-secret'
-app.config['SECURITY_PASSWORD_SALT'] = 'not-actually-a-salt'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'bestvods.db')
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Create database connection object
-db = alchemy.SQLAlchemy(app)
+db = alchemy.SQLAlchemy()
+
+
+def create_app(config):
+    new_app = flask.Flask(__name__)
+    for k, v in config.items():
+        new_app.config[k] = v
+    db.init_app(new_app)
+    new_app.app_context().push()
+    return new_app
+
+default_config = {
+    'DEBUG': True,
+    'SECRET_KEY': 'super-secret',
+    'SECRUITY_PASSWORD_SALT': 'not-actually-a-salt',
+    'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + ROOT_DIR + '/bestvods.db'
+}
+
+app = create_app(default_config)
 
 # Define models
 roles_users = db.Table('roles_users',
