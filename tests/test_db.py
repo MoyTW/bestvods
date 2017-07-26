@@ -9,7 +9,7 @@ test_config = {
 }
 
 
-class MyTest(flask_testing.TestCase):
+class BaseDBTest(flask_testing.TestCase):
     def create_app(self):
         return app.create_app(test_config)
 
@@ -23,6 +23,8 @@ class MyTest(flask_testing.TestCase):
         app.db.session.remove()
         app.db.drop_all()
 
+
+class InsertGameTest(BaseDBTest):
     @staticmethod
     def test_game_inserts_once():
         db.insert_game(app.db, 'n', 2004, 'The original')
@@ -54,3 +56,53 @@ class MyTest(flask_testing.TestCase):
         assert result[0] == ('Doom', 1993, 'Old')
         assert result[1] == ('Doom', 2016, 'New')
         assert len(result) == 2
+
+
+class InsertCategoryTest(BaseDBTest):
+    @staticmethod
+    def test_category_inserts_once():
+        db.insert_category(app.db, 'Any%', 'Finish by any means possible')
+        result = app.db.engine.execute('select * from category').fetchall()
+        assert result[0] == ('Any%', 'Finish by any means possible')
+        assert len(result) == 1
+
+    @staticmethod
+    def test_category_inserts_only_once():
+        db.insert_category(app.db, 'Any%', 'Finish by any means possible')
+        db.insert_category(app.db, 'Any%', 'Finish by any means possible')
+        result = app.db.engine.execute('select * from category').fetchall()
+        assert len(result) == 1
+
+    @staticmethod
+    def test_category_inserts_multiple():
+        db.insert_category(app.db, 'Any%', 'Finish by any means possible')
+        db.insert_category(app.db, '100%', 'Get everything')
+        db.insert_category(app.db, 'low%', 'Finish with the minimum possible')
+        result = app.db.engine.execute('select * from category').fetchall()
+        assert result[2] == ('low%', 'Finish with the minimum possible')
+        assert len(result) == 3
+
+
+class InsertPlatformTest(BaseDBTest):
+    @staticmethod
+    def test_platform_inserts_once():
+        db.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
+        result = app.db.engine.execute('select * from platform').fetchall()
+        assert result[0] == ('NES', 'Nintendo Entertainment System')
+        assert len(result) == 1
+
+    @staticmethod
+    def test_platform_inserts_only_once():
+        db.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
+        db.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
+        result = app.db.engine.execute('select * from platform').fetchall()
+        assert len(result) == 1
+
+    @staticmethod
+    def test_platform_inserts_multiple():
+        db.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
+        db.insert_platform(app.db, 'SNES', 'Super Nintendo Entertainment System')
+        db.insert_platform(app.db, 'N64', 'Nintendo 64')
+        result = app.db.engine.execute('select * from platform').fetchall()
+        assert result[2] == ('N64', 'Nintendo 64')
+        assert len(result) == 3

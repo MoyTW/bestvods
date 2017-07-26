@@ -19,5 +19,10 @@ def insert_category(db: f_alchemy.SQLAlchemy, name, description):
     pass
 
 
+def insert_platform(db: f_alchemy.SQLAlchemy, name, description):
+    pass
+
+
+# This one will wait a bit
 def insert_tag(db: f_alchemy.SQLAlchemy, name, description):
     pass
