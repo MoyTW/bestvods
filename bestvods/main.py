@@ -69,5 +69,21 @@ def create_user():
 def home():
     return flask.render_template('index.html')
 
+
+@app.route('/games', methods=['GET'])
+def view_games():
+    games = db.engine.execute('select name, release_year, description from game').fetchall()
+    return flask.render_template('games.html', games=games)
+
+
+@app.route('/games/add', methods=['GET', 'POST'])
+@login_required
+def add_game_get():
+    if flask.request.method == 'POST':
+        # Add WTForms to help handle this?
+        print(flask.request.form)
+    return flask.render_template('games_add.html')
+
+
 if __name__ == '__main__':
     app.run()
