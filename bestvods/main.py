@@ -72,10 +72,12 @@ def home():
     return flask.render_template('index.html')
 
 
+# Games
 @app.route('/games', methods=['GET'])
 def view_games():
     games = db.engine.execute('select name, release_year, description from game').fetchall()
-    return flask.render_template('games.html', games=games)
+    strings = [g.name + " (" + str(g.release_year) + ") - " + g.description for g in games]
+    return flask.render_template('_list.html', list_header='Games', items=strings)
 
 
 class AddGameForm(wtforms.Form):
@@ -93,8 +95,63 @@ def add_game():
             flask.flash('Inserted game')
         else:
             flask.flash('Game already exists')
-    return flask.render_template('games_add.html', form=form)
+    return flask.render_template('_resource_add.html',
+                                 resource_name='Game',
+                                 fields=[form.name, form.release_year, form.description])
 
+
+# Platforms
+@app.route('/platforms', methods=['GET'])
+def view_platforms():
+    platforms = db.engine.execute('select name, description from platform').fetchall()
+    strings = [p.name + ": " + p.description for p in platforms]
+    return flask.render_template('_list.html', list_header='Platforms', items=strings)
+
+
+class AddPlatformForm(wtforms.Form):
+    name = wtforms.StringField('Name', [wtforms.validators.DataRequired()])
+    description = wtforms.StringField('Description', [wtforms.validators.DataRequired()])
+
+
+@app.route('/platforms/add', methods=['GET', 'POST'])
+@login_required
+def add_platform():
+    form = AddPlatformForm(flask.request.form)
+    if flask.request.method == 'POST' and form.validate():
+        if db_ops.insert_platform(db, form.name.data, form.description.data):
+            flask.flash('Inserted platform')
+        else:
+            flask.flash('Platform already exists')
+    return flask.render_template('_resource_add.html',
+                                 resource_name='Platform',
+                                 fields=[form.name, form.description])
+
+
+# Categories
+@app.route('/categories', methods=['GET'])
+def view_categories():
+    categories = db.engine.execute('select name, description from category').fetchall()
+    strings = [p.name + ": " + p.description for p in categories]
+    return flask.render_template('_list.html', list_header='categories', items=strings)
+
+
+class AddCategoryForm(wtforms.Form):
+    name = wtforms.StringField('Name', [wtforms.validators.DataRequired()])
+    description = wtforms.StringField('Description', [wtforms.validators.DataRequired()])
+
+
+@app.route('/categories/add', methods=['GET', 'POST'])
+@login_required
+def add_category():
+    form = AddCategoryForm(flask.request.form)
+    if flask.request.method == 'POST' and form.validate():
+        if db_ops.insert_category(db, form.name.data, form.description.data):
+            flask.flash('Inserted category')
+        else:
+            flask.flash('Category already exists')
+    return flask.render_template('_resource_add.html',
+                                 resource_name='Category',
+                                 fields=[form.name, form.description])
 
 if __name__ == '__main__':
     app.run()

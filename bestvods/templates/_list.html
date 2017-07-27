@@ -1,9 +1,9 @@
 {% extends "_base.html" %}
 {% block body %}
-  <h2>Games</h2>
+  <h1>{{ list_header }}</h1>
   <ul class="entries">
-  {% for game in games %}
-    <li>{{ game.name }} ({{ game.release_year }}) - {{ game.description }}</li>
+  {% for item in items %}
+    <li>{{ item }}</li>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em></li>
   {% endfor %}
