@@ -14,6 +14,7 @@ def insert_game(db: f_alchemy.SQLAlchemy, name, release_year: int, description):
                           name=name,
                           release_year=release_year,
                           description=description)
+        return True
     except alchemy_exc.IntegrityError:
         return False
 
@@ -23,6 +24,7 @@ def insert_category(db: f_alchemy.SQLAlchemy, name, description):
         db.engine.execute(_insert_category_text,
                           name=name,
                           description=description)
+        return True
     except alchemy_exc.IntegrityError:
         return False
 
@@ -32,6 +34,7 @@ def insert_platform(db: f_alchemy.SQLAlchemy, name, description):
         db.engine.execute(_insert_platform_text,
                           name=name,
                           description=description)
+        return True
     except alchemy_exc.IntegrityError:
         return False
 

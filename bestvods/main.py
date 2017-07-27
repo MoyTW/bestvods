@@ -2,8 +2,10 @@ import os
 import flask
 import flask_sqlalchemy as alchemy
 import flask_security as security
+import wtforms
 # Decorators don't play nicely with namespaces it seems
 from flask_security import login_required
+import bestvods.db as db_ops
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -76,13 +78,22 @@ def view_games():
     return flask.render_template('games.html', games=games)
 
 
+class AddGameForm(wtforms.Form):
+    name = wtforms.StringField('Name', [wtforms.validators.DataRequired()])
+    release_year = wtforms.IntegerField('Release Year', [wtforms.validators.DataRequired()])
+    description = wtforms.StringField('Description', [wtforms.validators.DataRequired()])
+
+
 @app.route('/games/add', methods=['GET', 'POST'])
 @login_required
-def add_game_get():
-    if flask.request.method == 'POST':
-        # Add WTForms to help handle this?
-        print(flask.request.form)
-    return flask.render_template('games_add.html')
+def add_game():
+    form = AddGameForm(flask.request.form)
+    if flask.request.method == 'POST' and form.validate():
+        if db_ops.insert_game(db, form.name.data, form.release_year.data, form.description.data):
+            flask.flash('Inserted game')
+        else:
+            flask.flash('Game already exists')
+    return flask.render_template('games_add.html', form=form)
 
 
 if __name__ == '__main__':
