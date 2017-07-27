@@ -1,3 +1,4 @@
+import datetime
 import sqlite3
 import flask_testing
 import bestvods.main as app
@@ -105,4 +106,29 @@ class InsertPlatformTest(BaseDBTest):
         db.insert_platform(app.db, 'N64', 'Nintendo 64')
         result = app.db.engine.execute('select * from platform').fetchall()
         assert result[2] == ('N64', 'Nintendo 64')
+        assert len(result) == 3
+
+
+class InsertEventTest(BaseDBTest):
+    @staticmethod
+    def test_event_inserts_once():
+        db.insert_event(app.db, '2k', datetime.date(2000, 1, 1), datetime.date(2000, 1, 2), 'e2k')
+        result = app.db.engine.execute('select * from event').fetchall()
+        assert result[0] == ('2k', '2000-01-01', '2000-01-02', 'e2k')
+        assert len(result) == 1
+
+    @staticmethod
+    def test_event_inserts_only_once():
+        db.insert_event(app.db, '2k', datetime.date(2000, 1, 1), datetime.date(2000, 1, 2), 'e2k')
+        db.insert_event(app.db, '2k', datetime.date(2000, 1, 1), datetime.date(2000, 1, 2), 'e2k')
+        result = app.db.engine.execute('select * from event').fetchall()
+        assert len(result) == 1
+
+    @staticmethod
+    def test_event_inserts_multiple():
+        db.insert_event(app.db, '2k', datetime.date(2000, 1, 1), datetime.date(2000, 1, 2), 'e2k')
+        db.insert_event(app.db, '2k1', datetime.date(2001, 1, 1), datetime.date(2001, 1, 2), 'e2k1')
+        db.insert_event(app.db, '2k2', datetime.date(2002, 1, 1), datetime.date(2002, 1, 2), 'e2k2')
+        result = app.db.engine.execute('select * from event').fetchall()
+        assert result[2] == ('2k2', '2002-01-01', '2002-01-02', 'e2k2')
         assert len(result) == 3

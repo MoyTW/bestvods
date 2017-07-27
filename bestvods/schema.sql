@@ -63,6 +63,25 @@ create table vod (
        foreign key (category_id) references category(id)
 );
 
+/* Events */
+drop table if exists event;
+create table event (
+       name text primary key,
+       -- sqlite has no date storage type - unfortunate...
+       start_date text not null,
+       end_date text not null,
+       description text not null
+);
+
+drop table if exists vods_events;
+create table vods_events (
+       vod_id integer not null unique,
+       event_name text not null,
+
+       foreign key (vod_id) references vod(id),
+       foreign key (event_name) references event(name)
+);
+
 /* VoD participants */
 
 drop table if exists participant;
