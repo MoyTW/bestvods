@@ -1,5 +1,6 @@
 import os
 import datetime
+import json
 import flask
 import flask_sqlalchemy as alchemy
 import flask_security as security
@@ -72,6 +73,54 @@ def create_user():
 @login_required
 def home():
     return flask.render_template('index.html')
+
+
+# VoDs
+def query_vod(vod_id: int):
+    select_game = 'select id, game_name, game_release_year, platform_name, category_name from vod where id=:id'
+    select_runners = 'select participant.handle from participant ' \
+                     'join vods_runners on participant.id=vods_runners.participant_id ' \
+                     'where vod_id=:id'
+    select_commentators = 'select participant.handle from participant ' \
+                          'join vods_commentators on participant.id=vods_commentators.participant_id ' \
+                          'where vod_id=:id'
+    vod = db.engine.execute(select_game, id=vod_id).first()
+    participants = db.engine.execute(select_runners, id=vod_id).fetchall()
+    commentators = db.engine.execute(select_commentators, id=vod_id).fetchall()
+    return str(vod) + ' Runner(s): ' + str(participants) + ' Commentators: ' + str(commentators)
+
+
+@app.route('/vods', methods=['GET'])
+def view_vods():
+    all_ids = db.engine.execute('select id from vod').fetchall()
+    strings = [query_vod(vod_id[0]) for vod_id in all_ids]
+    return flask.render_template('_list.html', list_header='VoDs', items=strings)
+
+
+class AddVoDForm(wtforms.Form):
+    game = wtforms.StringField('Game', [validators.DataRequired(), validators.Length(max=256+7)],
+                               id='game_autocomplete')
+    platform = wtforms.StringField('Platform', [validators.DataRequired(), validators.Length(max=256)])
+    category = wtforms.StringField('Category', [validators.DataRequired(), validators.Length(max=256)])
+    hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24*7)])
+    minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+    seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+
+
+@app.route('/games/_autocomplete', methods=['GET'])
+def game_autocomplete():
+    print(str(flask.request.args['q']))
+    games = db.engine.execute('select name, release_year from game').fetchall()
+    strings = [g.name + " (" + str(g.release_year) + ")" for g in games]
+    return flask.Response(json.dumps(strings), mimetype='application/json')
+
+
+@app.route('/vods/add', methods=['GET', 'POST'])
+def add_vod():
+    form = AddVoDForm(flask.request.form)
+    if flask.request.method == 'POST' and form.validate():
+        flask.flash(str(form))
+    return flask.render_template('vod_add.html', form=form)
 
 
 # Games
