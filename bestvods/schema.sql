@@ -55,12 +55,12 @@ create table vod (
 
        game_name text not null,
        game_release_year integer not null,
-       platform_id integer not null,
-       category_id integer not null,
+       platform_name integer not null,
+       category_name integer not null,
 
        foreign key (game_name, game_release_year) references game(name, release_year),
-       foreign key (platform_id) references platform(id),
-       foreign key (category_id) references category(id)
+       foreign key (platform_name) references platform(name),
+       foreign key (category_name) references category(name)
 );
 
 /* Events */
