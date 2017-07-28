@@ -15,7 +15,7 @@
 <script>
     $(function() {
         $("#game_autocomplete").autocomplete({
-            source: '{{ url_for("game_autocomplete") }}',
+            source: '{{ url_for("games_root") }}',
             method: "get",
             minLength: 1
         });

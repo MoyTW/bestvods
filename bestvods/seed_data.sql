@@ -6,7 +6,9 @@ insert into game values ('Super Mario 64', 1996, 'Mario in 3D!');
 insert into game values ('Super Panga World', 2015, 'A romhack, very hard.');
 insert into game values ('Dark Souls', 2011, 'SOOOOOUUUULS');
 insert into game values ('Freedom Planet', 2014, 'A Sonic Fangame');
-
+insert into game values ('Star Wars Jedi Knight II: Jedi Outcast', 2002, 'I never played this');
+insert into game values ('Star Wars Jedi Knight: Jedi Academy', 2003, 'TAKE A BATH');
+insert into game values ('Star Wars', 1991, 'It was for the NES? I thought it was a SNES game...');
 
 -- Platform
 delete from platform;

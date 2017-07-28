@@ -75,6 +75,11 @@ def home():
     return flask.render_template('index.html')
 
 
+def accepts_json(request: flask.request):
+    best = request.accept_mimetypes.best_match(['application/json', 'text/html'])
+    return best == 'application/json' and request.accept_mimetypes[best] > request.accept_mimetypes['text/html']
+
+
 # VoDs
 def query_vod(vod_id: int):
     select_game = 'select id, game_name, game_release_year, platform_name, category_name from vod where id=:id'
@@ -107,14 +112,6 @@ class AddVoDForm(wtforms.Form):
     seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
 
 
-@app.route('/games/_autocomplete', methods=['GET'])
-def game_autocomplete():
-    term = flask.request.args['term']
-    games = db.engine.execute("select name, release_year from game where name like :term", term=term+'%').fetchall()
-    strings = [g.name + " (" + str(g.release_year) + ")" for g in games]
-    return flask.Response(json.dumps(strings), mimetype='application/json')
-
-
 @app.route('/vods/add', methods=['GET', 'POST'])
 def add_vod():
     form = AddVoDForm(flask.request.form)
@@ -124,11 +121,21 @@ def add_vod():
 
 
 # Games
+# TODO: Magic numbers in autocomplete, page size
 @app.route('/games', methods=['GET'])
-def view_games():
-    games = db.engine.execute('select name, release_year, description from game').fetchall()
-    strings = [g.name + " (" + str(g.release_year) + ") - " + g.description for g in games]
-    return flask.render_template('_list.html', list_header='Games', items=strings)
+def games_root():
+    term = flask.request.args['term']+'%' if 'term' in flask.request.args else '%'
+    if accepts_json(flask.request):
+        games = db.engine.execute("select name, release_year from game where name like :term limit 10",
+                                  term=term).fetchall()
+        strings = [g.name + " (" + str(g.release_year) + ")" for g in games]
+        return flask.Response(json.dumps(strings), mimetype='application/json')
+    else:
+        # Add pagination
+        games = db.engine.execute('select name, release_year, description from game where name like :term limit 50',
+                                  term=term).fetchall()
+        strings = [g.name + " (" + str(g.release_year) + ") - " + g.description for g in games]
+        return flask.render_template('_list.html', list_header='Games', items=strings)
 
 
 class AddGameForm(wtforms.Form):
