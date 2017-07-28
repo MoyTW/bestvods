@@ -1,0 +1,25 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "_base.html" %}
+{% block body %}
+  <h2>Add A {{ resource_name }}</h2>
+  <form action="" method="post">
+      <div class="input text">
+          {{ render_field(form.game) }}
+      </div>
+
+      <div class="input submit">
+          <input type="submit" value="Submit" />
+      </div>
+  </form>
+
+<script>
+    $(function() {
+        $("#game_autocomplete").autocomplete({
+            source: '{{ url_for("game_autocomplete") }}',
+            method: "get",
+            minLength: 1
+        });
+    });
+</script>
+
+{% endblock %}

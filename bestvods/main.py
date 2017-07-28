@@ -109,8 +109,8 @@ class AddVoDForm(wtforms.Form):
 
 @app.route('/games/_autocomplete', methods=['GET'])
 def game_autocomplete():
-    print(str(flask.request.args['q']))
-    games = db.engine.execute('select name, release_year from game').fetchall()
+    term = flask.request.args['term']
+    games = db.engine.execute("select name, release_year from game where name like :term", term=term+'%').fetchall()
     strings = [g.name + " (" + str(g.release_year) + ")" for g in games]
     return flask.Response(json.dumps(strings), mimetype='application/json')
 
