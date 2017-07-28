@@ -1,8 +1,10 @@
 import os
+import datetime
 import flask
 import flask_sqlalchemy as alchemy
 import flask_security as security
 import wtforms
+import wtforms.validators as validators
 # Decorators don't play nicely with namespaces it seems
 from flask_security import login_required
 import bestvods.db as db_ops
@@ -81,9 +83,11 @@ def view_games():
 
 
 class AddGameForm(wtforms.Form):
-    name = wtforms.StringField('Name', [wtforms.validators.DataRequired()])
-    release_year = wtforms.IntegerField('Release Year', [wtforms.validators.DataRequired()])
-    description = wtforms.StringField('Description', [wtforms.validators.DataRequired()])
+    name = wtforms.StringField('Name', [validators.DataRequired(), validators.Length(max=256)])
+    this_year = datetime.date.today().year
+    release_year = wtforms.IntegerField('Release Year', [validators.DataRequired(),
+                                                         validators.number_range(min=1962, max=this_year)])
+    description = wtforms.StringField('Description', [validators.DataRequired(), validators.Length(max=1024)])
 
 
 @app.route('/games/add', methods=['GET', 'POST'])
@@ -109,8 +113,8 @@ def view_platforms():
 
 
 class AddPlatformForm(wtforms.Form):
-    name = wtforms.StringField('Name', [wtforms.validators.DataRequired()])
-    description = wtforms.StringField('Description', [wtforms.validators.DataRequired()])
+    name = wtforms.StringField('Name', [validators.DataRequired(), validators.Length(max=256)])
+    description = wtforms.StringField('Description', [validators.DataRequired(), validators.Length(max=1024)])
 
 
 @app.route('/platforms/add', methods=['GET', 'POST'])
@@ -136,8 +140,8 @@ def view_categories():
 
 
 class AddCategoryForm(wtforms.Form):
-    name = wtforms.StringField('Name', [wtforms.validators.DataRequired()])
-    description = wtforms.StringField('Description', [wtforms.validators.DataRequired()])
+    name = wtforms.StringField('Name', [validators.DataRequired()], validators.Length(max=256))
+    description = wtforms.StringField('Description', [validators.DataRequired(), validators.Length(max=1024)])
 
 
 @app.route('/categories/add', methods=['GET', 'POST'])
