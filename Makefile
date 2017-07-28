@@ -9,4 +9,6 @@ _virtualenv:
 	_virtualenv/bin/pip install -r requirements.txt
 
 init-db:
+	rm bestvods/bestvods.db
 	sqlite3 bestvods/bestvods.db < bestvods/schema.sql
+	sqlite3 bestvods/bestvods.db < bestvods/seed_data.sql

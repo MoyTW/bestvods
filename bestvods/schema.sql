@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 /* Users and Roles */
 
 drop table if exists user;
