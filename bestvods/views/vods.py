@@ -1,3 +1,4 @@
+import bestvods.validators
 import flask
 import wtforms
 import wtforms.validators as validators
@@ -31,11 +32,17 @@ def root():
 
 
 class AddVoDForm(wtforms.Form):
-    game = wtforms.StringField('Game', [validators.DataRequired(), validators.Length(max=256+7)],
+    game = wtforms.StringField('Game', [validators.DataRequired(),
+                                        validators.Length(max=256+7),
+                                        bestvods.validators.GameExists(db)],
                                id='game_autocomplete')
-    platform = wtforms.StringField('Platform', [validators.DataRequired(), validators.Length(max=256)],
+    platform = wtforms.StringField('Platform', [validators.DataRequired(),
+                                                validators.Length(max=256),
+                                                bestvods.validators.PlatformExists(db)],
                                    id='platform_autocomplete')
-    category = wtforms.StringField('Category', [validators.DataRequired(), validators.Length(max=256)],
+    category = wtforms.StringField('Category', [validators.DataRequired(),
+                                                validators.Length(max=256),
+                                                bestvods.validators.CategoryExists(db)],
                                    id='category_autocomplete')
     hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24*7)])
     minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])

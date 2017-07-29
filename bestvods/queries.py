@@ -8,16 +8,32 @@ _insert_category_text = alchemy.text("insert into category values (:name, :descr
 _insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
 
+def game_exists(db: f_alchemy.SQLAlchemy, name_release_year):
+    try:
+        release_year = int(name_release_year[-6:].strip('()'))
+    except ValueError:
+        return False
+
+    result = db.engine.execute('select count(*) from game where name=:name and release_year=:release_year',
+                               name=name_release_year[:-6].strip(),
+                               release_year=release_year)
+    return result.first()[0]
+
+
 # The following functions have a lot of duplication!
 def insert_game(db: f_alchemy.SQLAlchemy, name, release_year: int, description):
     try:
         db.engine.execute(_insert_game_text,
-                          name=name,
+                          name=name.strip(),
                           release_year=release_year,
-                          description=description)
+                          description=description.strip())
         return True
     except alchemy_exc.IntegrityError:
         return False
+
+
+def category_exists(db: f_alchemy.SQLAlchemy, category):
+    return db.engine.execute('select count(*) from category where name=:name', name=category).first()[0]
 
 
 def insert_category(db: f_alchemy.SQLAlchemy, name, description):
@@ -28,6 +44,10 @@ def insert_category(db: f_alchemy.SQLAlchemy, name, description):
         return True
     except alchemy_exc.IntegrityError:
         return False
+
+
+def platform_exists(db: f_alchemy.SQLAlchemy, platform):
+    return db.engine.execute('select count(*) from platform where name=:name', name=platform).first()[0]
 
 
 def insert_platform(db: f_alchemy.SQLAlchemy, name, description):

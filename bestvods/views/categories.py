@@ -1,4 +1,4 @@
-import  bestvods.utils as utils
+import bestvods.utils as utils
 import bestvods.queries as queries
 import flask
 import json
