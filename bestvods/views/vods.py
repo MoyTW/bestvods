@@ -1,3 +1,4 @@
+import bestvods.queries as queries
 import bestvods.validators
 import flask
 import wtforms
@@ -32,17 +33,27 @@ def root():
 
 
 class AddVoDForm(wtforms.Form):
-    game = wtforms.StringField('Game', [validators.DataRequired(),
-                                        validators.Length(max=256+7),
-                                        bestvods.validators.GameExists(db)],
+    # This is kind of silly-looking, I admit. Just, like, formatting-wise.
+    game = wtforms.StringField('Game',
+                               [validators.DataRequired(),
+                                validators.Length(max=256+7),
+                                bestvods.validators.SatisfiesQuery(db,
+                                                                   queries.game_exists,
+                                                                   "I don't know this game!")],
                                id='game_autocomplete')
-    platform = wtforms.StringField('Platform', [validators.DataRequired(),
-                                                validators.Length(max=256),
-                                                bestvods.validators.PlatformExists(db)],
+    platform = wtforms.StringField('Platform',
+                                   [validators.DataRequired(),
+                                    validators.Length(max=256),
+                                    bestvods.validators.SatisfiesQuery(db,
+                                                                       queries.platform_exists,
+                                                                       "I don't know this platform!")],
                                    id='platform_autocomplete')
-    category = wtforms.StringField('Category', [validators.DataRequired(),
-                                                validators.Length(max=256),
-                                                bestvods.validators.CategoryExists(db)],
+    category = wtforms.StringField('Category',
+                                   [validators.DataRequired(),
+                                    validators.Length(max=256),
+                                    bestvods.validators.SatisfiesQuery(db,
+                                                                       queries.category_exists,
+                                                                       "I don't know this category!")],
                                    id='category_autocomplete')
     hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24*7)])
     minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
