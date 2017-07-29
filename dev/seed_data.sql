@@ -1,5 +1,8 @@
 PRAGMA foreign_keys = ON;
 
+delete from user;
+insert into user values (null, 'test@test.com', 'password', 1);
+
 -- Game
 delete from game;
 insert into game values ('Super Mario 64', 1996, 'Mario in 3D!');

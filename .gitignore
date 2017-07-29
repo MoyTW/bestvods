@@ -23,7 +23,7 @@ cmake-build-debug/
 
 # bestvods
 
-bestvods/bestvods.db
-bestvods/test.db
+dev/bestvods.db
+dev/test.db
 _virtualenv
 /*.egg-info
