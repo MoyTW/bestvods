@@ -32,6 +32,24 @@ def root():
     return flask.render_template('_list.html', list_header='VoDs', items=strings)
 
 
+class HHMMSSForm(wtforms.Form):
+    hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24 * 7)])
+    minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+    seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+
+
+class RunnersForm(wtforms.Form):
+    runners = wtforms.FieldList(wtforms.StringField('Runner', [validators.DataRequired()]), min_entries=1)
+    add_runner = wtforms.SubmitField()
+    remove_runner = wtforms.SubmitField()
+
+
+class CommentatorsForm(wtforms.Form):
+    commentators = wtforms.FieldList(wtforms.StringField('Commentator', [validators.DataRequired()]))
+    add_commentator = wtforms.SubmitField()
+    remove_commentator = wtforms.SubmitField()
+
+
 class AddVoDForm(wtforms.Form):
     # This is kind of silly-looking, I admit. Just, like, formatting-wise.
     game = wtforms.StringField('Game',
@@ -55,15 +73,35 @@ class AddVoDForm(wtforms.Form):
                                                                        queries.category_exists,
                                                                        "I don't know this category!")],
                                    id='category_autocomplete')
-    hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24*7)])
-    minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
-    seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+    time = wtforms.FormField(HHMMSSForm)
+    runners = wtforms.FormField(RunnersForm)
+    commentators = wtforms.FormField(CommentatorsForm)
+    add_vod = wtforms.SubmitField()
 
 
 @blueprint.route('/add', methods=['GET', 'POST'])
 @login_required
 def add():
     form = AddVoDForm(flask.request.form)
-    if flask.request.method == 'POST' and form.validate():
-        flask.flash(str(form))
+
+    # TODO: AJAX or JS frontend
+    if flask.request.method == 'POST':
+        if form.runners.add_runner.data:
+            form.runners.runners.append_entry()
+
+        elif form.runners.remove_runner.data:
+            if len(form.runners.runners.entries) > 1:
+                form.runners.runners.pop_entry()
+
+        elif form.commentators.add_commentator.data:
+            form.commentators.commentators.append_entry()
+
+        elif form.commentators.remove_commentator.data:
+            if len(form.commentators.commentators.entries) > 0:
+                form.commentators.commentators.pop_entry()
+
+        elif form.validate() and form.add_vod.data:
+            flask.flash('VALIDATED')
+            print('VALIDATED')
+
     return flask.render_template('vod_add.html', form=form)
