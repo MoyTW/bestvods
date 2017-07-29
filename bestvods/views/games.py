@@ -15,8 +15,9 @@ blueprint = flask.Blueprint('games', __name__, template_folder='templates')
 
 # TODO: Magic numbers in autocomplete, page size
 @blueprint.route('/', methods=['GET'])
-def games_root():
+def root():
     term = flask.request.args['term']+'%' if 'term' in flask.request.args else '%'
+
     if utils.accepts_json(flask.request):
         games = db.engine.execute("select name, release_year from game where name like :term limit 10",
                                   term=term).fetchall()
@@ -40,7 +41,7 @@ class AddGameForm(wtforms.Form):
 
 @blueprint.route('/add', methods=['GET', 'POST'])
 @login_required
-def add_game():
+def add():
     form = AddGameForm(flask.request.form)
     if flask.request.method == 'POST' and form.validate():
         if queries.insert_game(db, form.name.data, form.release_year.data, form.description.data):

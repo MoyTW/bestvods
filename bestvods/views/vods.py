@@ -24,7 +24,7 @@ def query_vod(vod_id: int):
 
 
 @blueprint.route('/', methods=['GET'])
-def vods_root():
+def root():
     all_ids = db.engine.execute('select id from vod').fetchall()
     strings = [query_vod(vod_id[0]) for vod_id in all_ids]
     return flask.render_template('_list.html', list_header='VoDs', items=strings)
@@ -33,8 +33,10 @@ def vods_root():
 class AddVoDForm(wtforms.Form):
     game = wtforms.StringField('Game', [validators.DataRequired(), validators.Length(max=256+7)],
                                id='game_autocomplete')
-    platform = wtforms.StringField('Platform', [validators.DataRequired(), validators.Length(max=256)])
-    category = wtforms.StringField('Category', [validators.DataRequired(), validators.Length(max=256)])
+    platform = wtforms.StringField('Platform', [validators.DataRequired(), validators.Length(max=256)],
+                                   id='platform_autocomplete')
+    category = wtforms.StringField('Category', [validators.DataRequired(), validators.Length(max=256)],
+                                   id='category_autocomplete')
     hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24*7)])
     minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
     seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
@@ -42,7 +44,7 @@ class AddVoDForm(wtforms.Form):
 
 @blueprint.route('/add', methods=['GET', 'POST'])
 @login_required
-def add_vod():
+def add():
     form = AddVoDForm(flask.request.form)
     if flask.request.method == 'POST' and form.validate():
         flask.flash(str(form))
