@@ -13,7 +13,6 @@ test_config = {
 def timestamp_almost_now(timestamp):
     now = datetime.datetime.utcnow()
     dt_timestamp = datetime.datetime.strptime(timestamp,  "%Y-%m-%d %H:%M:%S")
-    print(now, dt_timestamp)
     return now - datetime.timedelta(seconds=5) < dt_timestamp < now + datetime.timedelta(seconds=5)
 
 
@@ -79,27 +78,42 @@ class InsertGameTest(BaseQueryTest):
 
 
 class InsertCategoryTest(BaseQueryTest):
+    def setUp(self):
+        super().setUp()
+        queries.insert_game(app.db, 'n', 2004, 'The original')
+
     @staticmethod
     def test_category_inserts_once():
-        queries.insert_category(app.db, 'Any%', 'Finish by any means possible')
+        queries.insert_category(app.db, 0, 'Any%', 'Finish by any means possible')
         result = app.db.engine.execute('select * from category').fetchall()
-        assert result[0] == ('Any%', 'Finish by any means possible')
+        print(result)
+
+        last_row = result[0]
+        assert last_row[0] == 1
+        assert timestamp_almost_now(last_row[1])
+        assert last_row[2] == 'Any%'
+        assert last_row[3] == 'Finish by any means possible'
         assert len(result) == 1
 
     @staticmethod
     def test_category_inserts_only_once():
-        queries.insert_category(app.db, 'Any%', 'Finish by any means possible')
-        queries.insert_category(app.db, 'Any%', 'Finish by any means possible')
+        queries.insert_category(app.db, 0, 'Any%', 'Finish by any means possible')
+        queries.insert_category(app.db, 0, 'Any%', 'Finish by any means possible')
         result = app.db.engine.execute('select * from category').fetchall()
         assert len(result) == 1
 
     @staticmethod
     def test_category_inserts_multiple():
-        queries.insert_category(app.db, 'Any%', 'Finish by any means possible')
-        queries.insert_category(app.db, '100%', 'Get everything')
-        queries.insert_category(app.db, 'low%', 'Finish with the minimum possible')
+        queries.insert_category(app.db, 0, 'Any%', 'Finish by any means possible')
+        queries.insert_category(app.db, 0, '100%', 'Get everything')
+        queries.insert_category(app.db, 0, 'Low%', 'Finish with the minimum possible')
         result = app.db.engine.execute('select * from category').fetchall()
-        assert result[2] == ('low%', 'Finish with the minimum possible')
+
+        last_row = result[2]
+        assert last_row[0] == 3
+        assert timestamp_almost_now(last_row[1])
+        assert last_row[2] == 'Low%'
+        assert last_row[3] == 'Finish with the minimum possible'
         assert len(result) == 3
 
 

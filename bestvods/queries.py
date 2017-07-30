@@ -3,7 +3,7 @@ import sqlalchemy as alchemy
 import sqlalchemy.exc as alchemy_exc
 import datetime
 
-_insert_category_text = alchemy.text("insert into category values (:name, :description)")
+
 _insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
 
@@ -37,10 +37,14 @@ def insert_game(db: f_alchemy.SQLAlchemy, name, release_year: int, description):
 def category_exists(db: f_alchemy.SQLAlchemy, category):
     return db.engine.execute('select count(*) from category where name=:name', name=category).first()[0]
 
+_insert_category_text = alchemy.text("insert into category values "
+                                     "(null, CURRENT_TIMESTAMP, :name, :description, :game_id)")
 
-def insert_category(db: f_alchemy.SQLAlchemy, name, description):
+
+def insert_category(db: f_alchemy.SQLAlchemy, game_id: int, name, description):
     try:
         db.engine.execute(_insert_category_text,
+                          game_id=game_id,
                           name=name,
                           description=description)
         return True

@@ -21,17 +21,23 @@ insert into platform values ('SNES', 'Super Nintendo Entertainment System. Super
 
 -- Category
 delete from category;
-insert into category values('120 Star', 'All 120 stars');
-insert into category values('Any%', 'Finish the game with no conditions');
-insert into category values('Any% Kiln Skip', 'I have no idea what this category is');
-insert into category values('Lilac Any%', 'Any% using Lilac');
+insert into category values(null, CURRENT_TIMESTAMP, '120 Star', 'All 120 stars',
+       (select id from game where name='Super Mario 64'));
+insert into category values(null, CURRENT_TIMESTAMP, 'Any%', 'Finish the game with no conditions',
+       (select id from game where name='Super Mario 64'));
+insert into category values(null, CURRENT_TIMESTAMP, 'Any%', 'Finish the game with no conditions',
+       (select id from game where name='Super Panga World'));
+insert into category values(null, CURRENT_TIMESTAMP, 'Any% Kiln Skip', 'I have no idea what this category is',
+       (select id from game where name='Dark Souls'));
+insert into category values(null, CURRENT_TIMESTAMP, 'Lilac Any%', 'Any% using Lilac',
+       (select id from game where name='Freedom Planet'));
 
 -- VoD
 delete from vod;
-insert into vod values(null, 6100, (select id from game where name='Super Mario 64'), 'N64', '120 Star');
-insert into vod values(null, 2003, (select id from game where name='Super Panga World'), 'SNES', 'Any%');
-insert into vod values(null, 1745, (select id from game where name='Dark Souls'), 'PC', 'Any% Kiln Skip');
-insert into vod values(null, 2656, (select id from game where name='Freedom Planet'), 'PC', 'Lilac Any%');
+insert into vod values(null, CURRENT_TIMESTAMP,  6100, CURRENT_DATE, (select id from game where name='Super Mario 64'), 'N64', '120 Star');
+insert into vod values(null, CURRENT_TIMESTAMP,  2003, CURRENT_DATE, (select id from game where name='Super Panga World'), 'SNES', 'Any%');
+insert into vod values(null, CURRENT_TIMESTAMP,  1745, CURRENT_DATE, (select id from game where name='Dark Souls'), 'PC', 'Any% Kiln Skip');
+insert into vod values(null, CURRENT_TIMESTAMP,  2656, CURRENT_DATE, (select id from game where name='Freedom Planet'), 'PC', 'Lilac Any%');
 
 -- Participant
 delete from participant;

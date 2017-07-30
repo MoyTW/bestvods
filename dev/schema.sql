@@ -30,8 +30,16 @@ create table roles_users (
 
 drop table if exists category;
 create table category (
-       name text primary key,
-       description text not null
+       id integer primary key autoincrement,
+       added_at text not null, -- YYYY-MM-DDTHH:MM:SS
+
+       name text not null,
+       description text not null,
+
+       game_id integer not null,
+
+       unique (name, game_id),
+       foreign key(game_id) references game(id)
 );
 
 drop table if exists game;
@@ -56,15 +64,18 @@ create table platform (
 drop table if exists vod;
 create table vod (
        id integer primary key autoincrement,
+       added_at text not null, -- YYYY-MM-DDTHH:MM:SS
+
        run_time_seconds integer not null,
+       completed_date text not null, -- YY-MM-DD
 
        game_id integer not null,
        platform_name text not null,
-       category_name text not null,
+       category_id integer not null,
 
        foreign key (game_id) references game(id),
        foreign key (platform_name) references platform(name),
-       foreign key (category_name) references category(name)
+       foreign key (category_id) references category(id)
 );
 
 /* Events */
