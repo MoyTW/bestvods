@@ -39,13 +39,17 @@ class HHMMSSForm(wtforms.Form):
 
 
 class RunnersForm(wtforms.Form):
-    runners = wtforms.FieldList(wtforms.StringField('Runner', [validators.DataRequired()]), min_entries=1)
+    runner_exists = bestvods.validators.SatisfiesQuery(db, queries.participant_exists, "No such runner!")
+    runners = wtforms.FieldList(wtforms.StringField('Runner', [validators.DataRequired(), runner_exists]),
+                                min_entries=1)
     add_runner = wtforms.SubmitField()
     remove_runner = wtforms.SubmitField()
 
 
 class CommentatorsForm(wtforms.Form):
-    commentators = wtforms.FieldList(wtforms.StringField('Commentator', [validators.DataRequired()]))
+    commentator_exists = bestvods.validators.SatisfiesQuery(db, queries.participant_exists, "No such commentator!")
+    commentators = wtforms.FieldList(wtforms.StringField('Commentator',
+                                                         [validators.DataRequired(), commentator_exists]))
     add_commentator = wtforms.SubmitField()
     remove_commentator = wtforms.SubmitField()
 

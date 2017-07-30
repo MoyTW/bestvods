@@ -38,6 +38,27 @@
             minLength: 1
         });
     });
+
+    {% for runner in form.runners.runners %}
+    $(function() {
+        $("#{{ runner.id }}").autocomplete({
+            source: '{{ url_for("participants.root") }}',
+            method: "get",
+            minLength: 1
+        });
+    });
+    {% endfor %}
+
+    {% for commentator in form.commentators.commentators %}
+    $(function() {
+        $("#{{ commentator.id }}").autocomplete({
+            source: '{{ url_for("participants.root") }}',
+            method: "get",
+            minLength: 1
+        });
+    });
+    {% endfor %}
+
 </script>
 
 {% endblock %}
