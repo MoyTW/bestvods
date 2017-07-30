@@ -77,3 +77,18 @@ def insert_event(db: f_alchemy.SQLAlchemy, name, start_date: datetime.date, end_
         return True
     except alchemy_exc.IntegrityError:
         return False
+
+
+def participant_exists(db: f_alchemy.SQLAlchemy, handle):
+    return db.engine.execute('select count(*) from participant where handle=:handle', handle=handle).first()[0]
+
+
+_insert_participant_text = alchemy.text("insert into participant values (null, :handle, :stream_url)")
+
+
+def insert_participant(db: f_alchemy.SQLAlchemy, handle, stream_url):
+    try:
+        db.engine.execute(_insert_participant_text, handle=handle, stream_url=stream_url)
+        return True
+    except alchemy_exc.IntegrityError:
+        return False
