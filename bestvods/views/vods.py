@@ -1,5 +1,6 @@
 import bestvods.queries as queries
 import bestvods.validators
+import datetime
 import flask
 import wtforms
 import wtforms.validators as validators
@@ -32,10 +33,37 @@ def root():
     return flask.render_template('_list.html', list_header='VoDs', items=strings)
 
 
+class DateForm(wtforms.Form):
+    year = wtforms.IntegerField('Year', [validators.DataRequired(),
+                                         validators.number_range(min=1962, max=datetime.date.today().year)])
+    month = wtforms.IntegerField('Month', [validators.DataRequired(), validators.number_range(min=1, max=12)])
+    day = wtforms.IntegerField('Day', [validators.DataRequired(), validators.number_range(min=1, max=31)])
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        try:
+            datetime.date(year=self.year.data, month=self.month.data, day=self.day.data)
+            return True
+        except ValueError:
+            self.day.errors.append('Day ' + str(self.day.data) + ' is not a valid day for ' + str(self.month.data) +
+                                   '!')
+            return False
+
+    @property
+    def date(self) -> datetime.date:
+        return datetime.date(year=self.year.data, month=self.month.data, day=self.day.data)
+
+
 class HHMMSSForm(wtforms.Form):
     hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24 * 7)])
     minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
     seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+
+    @property
+    def seconds(self):
+        return self.hours * 60 * 60 + self.minutes * 60 + self.seconds
 
 
 class RunnersForm(wtforms.Form):
@@ -78,6 +106,7 @@ class AddVoDForm(wtforms.Form):
                                                                        "I don't know this category!")],
                                    id='category_autocomplete')
     time = wtforms.FormField(HHMMSSForm)
+    date_completed = wtforms.FormField(DateForm)
     runners = wtforms.FormField(RunnersForm)
     commentators = wtforms.FormField(CommentatorsForm)
     add_vod = wtforms.SubmitField()
