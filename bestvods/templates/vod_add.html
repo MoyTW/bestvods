@@ -21,21 +21,20 @@
             method: "get",
             minLength: 1
         });
-    });
 
-    $(function() {
         $("#platform_autocomplete").autocomplete({
             source: '{{ url_for("platforms.root") }}',
             method: "get",
             minLength: 1
         });
-    });
 
-    $(function() {
-        $("#category_autocomplete").autocomplete({
-            source: '{{ url_for("categories.root") }}',
-            method: "get",
-            minLength: 1
+        var game = $("#{{ form.game.id }}");
+        game.change(function() {
+            gameText = game.val();
+            $("#category_autocomplete").autocomplete({
+                source: '{{ url_for("games.root") }}' + gameText + '/categories',
+                method: "get",
+                minLength: 1});
         });
     });
 

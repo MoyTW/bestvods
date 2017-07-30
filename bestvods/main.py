@@ -34,7 +34,6 @@ app = create_app(default_config)
 app.register_blueprint(views.games.blueprint, url_prefix='/games')
 app.register_blueprint(views.platforms.blueprint, url_prefix='/platforms')
 app.register_blueprint(views.vods.blueprint, url_prefix='/vods')
-app.register_blueprint(views.categories.blueprint, url_prefix='/categories')
 app.register_blueprint(views.participants.blueprint, url_prefix='/participants')
 
 # Setup security

@@ -7,6 +7,19 @@ import datetime
 _insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
 
+def select_game(db: f_alchemy.SQLAlchemy, name_release_year):
+    try:
+        release_year = int(name_release_year[-6:].strip('()'))
+    except ValueError:
+        return []
+
+    result = db.engine.execute('select id, added_at, name, release_year, description from game '
+                               'where name=:name and release_year=:release_year',
+                               name=name_release_year[:-6].strip(),
+                               release_year=release_year)
+    return result.first()
+
+
 def game_exists(db: f_alchemy.SQLAlchemy, name_release_year):
     try:
         release_year = int(name_release_year[-6:].strip('()'))
