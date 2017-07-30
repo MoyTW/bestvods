@@ -36,12 +36,15 @@ create table category (
 
 drop table if exists game;
 create table game (
+       id integer primary key autoincrement,
+       added_at text not null, -- YYYY-MM-DDTHH:MM:SS
+
        name text not null,
        release_year integer not null,
 
        description text not null,
 
-       primary key (name, release_year)
+       unique (name, release_year)
 );
 
 drop table if exists platform;
@@ -55,12 +58,11 @@ create table vod (
        id integer primary key autoincrement,
        run_time_seconds integer not null,
 
-       game_name text not null,
-       game_release_year integer not null,
-       platform_name integer not null,
-       category_name integer not null,
+       game_id integer not null,
+       platform_name text not null,
+       category_name text not null,
 
-       foreign key (game_name, game_release_year) references game(name, release_year),
+       foreign key (game_id) references game(id),
        foreign key (platform_name) references platform(name),
        foreign key (category_name) references category(name)
 );
@@ -70,8 +72,8 @@ drop table if exists event;
 create table event (
        name text primary key,
        -- sqlite has no date storage type - unfortunate...
-       start_date text not null,
-       end_date text not null,
+       start_date text not null, -- YY-MM-DD
+       end_date text not null, -- YY-MM-DD
        description text not null
 );
 

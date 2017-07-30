@@ -3,7 +3,6 @@ import sqlalchemy as alchemy
 import sqlalchemy.exc as alchemy_exc
 import datetime
 
-_insert_game_text = alchemy.text("insert into game values (:name, :release_year, :description)")
 _insert_category_text = alchemy.text("insert into category values (:name, :description)")
 _insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
@@ -18,6 +17,9 @@ def game_exists(db: f_alchemy.SQLAlchemy, name_release_year):
                                name=name_release_year[:-6].strip(),
                                release_year=release_year)
     return result.first()[0]
+
+
+_insert_game_text = alchemy.text("insert into game values (null, CURRENT_TIMESTAMP, :name, :release_year, :description)")
 
 
 # The following functions have a lot of duplication!
