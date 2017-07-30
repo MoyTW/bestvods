@@ -1,4 +1,4 @@
--- PRAGMA foreign_keys = ON;
+PRAGMA foreign_keys = ON;
 
 delete from user;
 insert into user values (null, 'test@test.com', 'password', 1);
@@ -34,10 +34,10 @@ insert into category values(null, CURRENT_TIMESTAMP, 'Lilac Any%', 'Any% using L
 
 -- VoD
 delete from vod;
-insert into vod values(null, CURRENT_TIMESTAMP,  6100, CURRENT_DATE, (select id from game where name='Super Mario 64'), 'N64', '120 Star');
-insert into vod values(null, CURRENT_TIMESTAMP,  2003, CURRENT_DATE, (select id from game where name='Super Panga World'), 'SNES', 'Any%');
-insert into vod values(null, CURRENT_TIMESTAMP,  1745, CURRENT_DATE, (select id from game where name='Dark Souls'), 'PC', 'Any% Kiln Skip');
-insert into vod values(null, CURRENT_TIMESTAMP,  2656, CURRENT_DATE, (select id from game where name='Freedom Planet'), 'PC', 'Lilac Any%');
+insert into vod values(null, CURRENT_TIMESTAMP,  6100, CURRENT_DATE, (select id from game where name='Super Mario 64'), 'N64', (select id from category where name='120 Star'));
+insert into vod values(null, CURRENT_TIMESTAMP,  2003, CURRENT_DATE, (select id from game where name='Super Panga World'), 'SNES', (select id from category where name='Any%'));
+insert into vod values(null, CURRENT_TIMESTAMP,  1745, CURRENT_DATE, (select id from game where name='Dark Souls'), 'PC', (select id from category where name='Any% Kiln Skip'));
+insert into vod values(null, CURRENT_TIMESTAMP,  2656, CURRENT_DATE, (select id from game where name='Freedom Planet'), 'PC', (select id from category where name='Lilac Any%'));
 
 -- Participant
 delete from participant;

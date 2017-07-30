@@ -13,7 +13,12 @@ blueprint = flask.Blueprint('vods', __name__, template_folder='templates')
 
 
 def query_vod(vod_id: int):
-    select_game = 'select id, game_name, game_release_year, platform_name, category_name from vod where id=:id'
+    select_game = """
+    select vod.id, game.name, platform_name, category.name from vod
+    join game on vod.game_id=game.id
+    join category on vod.category_id=category.id
+    where vod.id=:id
+    """
     select_runners = 'select participant.handle from participant ' \
                      'join vods_runners on participant.id=vods_runners.participant_id ' \
                      'where vod_id=:id'
@@ -57,13 +62,23 @@ class DateForm(wtforms.Form):
 
 
 class HHMMSSForm(wtforms.Form):
-    hours = wtforms.IntegerField('Hours', [validators.DataRequired(), validators.number_range(min=0, max=24 * 7)])
-    minutes = wtforms.IntegerField('Minutes', [validators.DataRequired(), validators.number_range(min=0, max=60)])
-    seconds = wtforms.IntegerField('Seconds', [validators.DataRequired(), validators.number_range(min=0, max=60)])
+    hours = wtforms.IntegerField('Hours', [validators.number_range(min=0, max=24 * 7)])
+    minutes = wtforms.IntegerField('Minutes', [validators.number_range(min=0, max=60)])
+    seconds = wtforms.IntegerField('Seconds', [validators.number_range(min=0, max=60)])
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        if self.total_seconds <= 0:
+            self.seconds.errors.append('Runs at least take a second!')
+            return False
+        else:
+            return True
 
     @property
-    def seconds(self):
-        return self.hours * 60 * 60 + self.minutes * 60 + self.seconds
+    def total_seconds(self):
+        return self.hours.data * 60 * 60 + self.minutes.data * 60 + self.seconds.data
 
 
 class RunnersForm(wtforms.Form):
@@ -73,6 +88,16 @@ class RunnersForm(wtforms.Form):
     add_runner = wtforms.SubmitField()
     remove_runner = wtforms.SubmitField()
 
+    def validate(self):
+        if not super().validate():
+            return False
+
+        if len(self.runners.data) > len(frozenset(self.runners.data)):
+            self.runners.errors.append('Runners must be unique!')
+            return False
+        else:
+            return True
+
 
 class CommentatorsForm(wtforms.Form):
     commentator_exists = bestvods.validators.SatisfiesQuery(db, queries.participant_exists, "No such commentator!")
@@ -80,6 +105,16 @@ class CommentatorsForm(wtforms.Form):
                                                          [validators.DataRequired(), commentator_exists]))
     add_commentator = wtforms.SubmitField()
     remove_commentator = wtforms.SubmitField()
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        if len(self.commentators.data) > len(frozenset(self.commentators.data)):
+            self.commentators.errors.append('Commentators must be unique!')
+            return False
+        else:
+            return True
 
 
 class AddVoDForm(wtforms.Form):
@@ -134,7 +169,8 @@ def add():
                 form.commentators.commentators.pop_entry()
 
         elif form.validate() and form.add_vod.data:
-            flask.flash('VALIDATED')
-            print('VALIDATED')
+            queries.insert_vod(db, form.game.data, form.platform.data, form.category.data, form.time.total_seconds,
+                               form.date_completed.date, form.runners.runners.data, form.commentators.commentators.data)
+            return flask.redirect(flask.url_for('vods.add'))
 
     return flask.render_template('vod_add.html', form=form)
