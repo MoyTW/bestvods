@@ -7,6 +7,15 @@ import wtforms.validators as validators
 from bestvods.database import db
 
 
+class LinksForm(wtforms.Form):
+    links = wtforms.FieldList(wtforms.StringField('VoD Link', [validators.DataRequired(),
+                                                               validators.Length(min=0, max=4096),
+                                                               validators.URL()]),
+                              min_entries=1)
+    add_link = wtforms.SubmitField()
+    remove_link = wtforms.SubmitField()
+
+
 class HHMMSSForm(wtforms.Form):
     hours = wtforms.IntegerField('Hours', [validators.number_range(min=0, max=24 * 7)])
     minutes = wtforms.IntegerField('Minutes', [validators.number_range(min=0, max=60)])
@@ -87,6 +96,7 @@ class CommentatorsForm(wtforms.Form):
 
 
 class AddVoDForm(wtforms.Form):
+    links = wtforms.FormField(LinksForm)
     # This is kind of silly-looking, I admit. Just, like, formatting-wise.
     game = wtforms.StringField('Game',
                                [validators.DataRequired(),

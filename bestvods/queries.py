@@ -127,7 +127,7 @@ insert into vod values(null, CURRENT_TIMESTAMP, :run_time_seconds, :completed_da
 """)
 
 
-def insert_vod(db: f_alchemy.SQLAlchemy, game_name_release_year, platform_name, category_name, run_time_seconds,
+def insert_vod(db: f_alchemy.SQLAlchemy, links, game_name_release_year, platform_name, category_name, run_time_seconds,
                completed_date: datetime.date, runner_handles, commentator_handles):
     game = select_game(db, game_name_release_year)
     if game is None:
@@ -137,6 +137,8 @@ def insert_vod(db: f_alchemy.SQLAlchemy, game_name_release_year, platform_name, 
         transaction.execute(_insert_vod_text, run_time_seconds=run_time_seconds, completed_date=completed_date,
                             game_id=game['id'], platform_name=platform_name, category_name=category_name)
         vod_id = transaction.execute('select last_insert_rowid()').first()[0]
+        for url in links:
+            transaction.execute('insert into vod_links values (:url, :vod_id)', url=url, vod_id=vod_id)
         for handle in runner_handles:
             sql = 'insert into vods_runners values (:vod_id, (select id from participant where handle=:handle))'
             transaction.execute(sql, vod_id=vod_id, handle=handle)

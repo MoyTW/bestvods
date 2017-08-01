@@ -16,6 +16,7 @@ def query_vod(vod_id: int):
     join category on vod.category_id=category.id
     where vod.id=:id
     """
+    select_links = 'select uri from vod_links where vod_id=:id'
     select_runners = 'select participant.handle from participant ' \
                      'join vods_runners on participant.id=vods_runners.participant_id ' \
                      'where vod_id=:id'
@@ -23,9 +24,11 @@ def query_vod(vod_id: int):
                           'join vods_commentators on participant.id=vods_commentators.participant_id ' \
                           'where vod_id=:id'
     vod = db.engine.execute(select_game, id=vod_id).first()
+    links = db.engine.execute(select_links, id=vod_id).fetchall()
     participants = db.engine.execute(select_runners, id=vod_id).fetchall()
     commentators = db.engine.execute(select_commentators, id=vod_id).fetchall()
-    return str(vod) + ' Runner(s): ' + str(participants) + ' Commentators: ' + str(commentators)
+    return str(vod) + ' Link(s): ' + str(links) + ' Runner(s): ' + str(participants) + \
+           ' Commentators: ' + str(commentators)
 
 
 @blueprint.route('/', methods=['GET'])
@@ -42,23 +45,28 @@ def add():
 
     # TODO: AJAX or JS frontend
     if flask.request.method == 'POST':
-        if form.runners.add_runner.data:
-            form.runners.runners.append_entry()
+        if form.links.add_link.data:
+            form.links.links.append_entry()
+        elif form.links.remove_link.data:
+            if len(form.links.links.entries) > 1:
+                form.links.links.pop_entry()
 
+        elif form.runners.add_runner.data:
+            form.runners.runners.append_entry()
         elif form.runners.remove_runner.data:
             if len(form.runners.runners.entries) > 1:
                 form.runners.runners.pop_entry()
 
         elif form.commentators.add_commentator.data:
             form.commentators.commentators.append_entry()
-
         elif form.commentators.remove_commentator.data:
             if len(form.commentators.commentators.entries) > 0:
                 form.commentators.commentators.pop_entry()
 
         elif form.validate() and form.add_vod.data:
-            queries.insert_vod(db, form.game.data, form.platform.data, form.category.data, form.time.total_seconds,
-                               form.date_completed.date, form.runners.runners.data, form.commentators.commentators.data)
+            queries.insert_vod(db, form.links.links.data, form.game.data, form.platform.data, form.category.data,
+                               form.time.total_seconds, form.date_completed.date, form.runners.runners.data,
+                               form.commentators.commentators.data)
             return flask.redirect(flask.url_for('vods.add'))
 
     return flask.render_template('vod_add.html', form=form)

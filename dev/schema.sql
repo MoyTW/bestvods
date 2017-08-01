@@ -78,6 +78,13 @@ create table vod (
        foreign key (category_id) references category(id)
 );
 
+drop table if exists vod_links;
+create table vod_links (
+       uri text primary key,
+       vod_id integer not null,
+       foreign key(vod_id) references vod(id)
+);
+
 /* Events */
 drop table if exists event;
 create table event (
