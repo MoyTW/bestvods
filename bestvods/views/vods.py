@@ -38,6 +38,19 @@ def root():
     return flask.render_template('_list.html', list_header='VoDs', items=strings)
 
 
+@blueprint.route('/search', methods=['GET', 'POST'])
+def search():
+    vod_strs = []
+    form = forms.SearchVoDsForm(flask.request.form)
+
+    if flask.request.method == 'POST':
+        rows = queries.search_vod(db, form.game.data, form.runner.data, form.commentator.data)
+        vod_strs = [str(row) for row in rows]
+        return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)
+
+    return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)
+
+
 @blueprint.route('/add', methods=['GET', 'POST'])
 @login_required
 def add():

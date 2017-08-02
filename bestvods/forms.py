@@ -61,7 +61,9 @@ class DateForm(wtforms.Form):
 
 class RunnersForm(wtforms.Form):
     runner_exists = bestvods.validators.SatisfiesQuery(db, queries.participant_exists, "No such runner!")
-    runners = wtforms.FieldList(wtforms.StringField('Runner', [validators.DataRequired(), runner_exists]),
+    runners = wtforms.FieldList(wtforms.StringField('Runner', [validators.DataRequired(),
+                                                               validators.Length(max=512),
+                                                               runner_exists]),
                                 min_entries=1)
     add_runner = wtforms.SubmitField()
     remove_runner = wtforms.SubmitField()
@@ -80,7 +82,9 @@ class RunnersForm(wtforms.Form):
 class CommentatorsForm(wtforms.Form):
     commentator_exists = bestvods.validators.SatisfiesQuery(db, queries.participant_exists, "No such commentator!")
     commentators = wtforms.FieldList(wtforms.StringField('Commentator',
-                                                         [validators.DataRequired(), commentator_exists]))
+                                                         [validators.DataRequired(),
+                                                          validators.Length(max=512),
+                                                          commentator_exists]))
     add_commentator = wtforms.SubmitField()
     remove_commentator = wtforms.SubmitField()
 
@@ -124,3 +128,23 @@ class AddVoDForm(wtforms.Form):
     runners = wtforms.FormField(RunnersForm)
     commentators = wtforms.FormField(CommentatorsForm)
     add_vod = wtforms.SubmitField()
+
+
+class SearchVoDsForm(wtforms.Form):
+    game = wtforms.StringField('Game',
+                               [validators.Length(max=256 + 7),
+                                bestvods.validators.SatisfiesQuery(db,
+                                                                   queries.game_exists,
+                                                                   "I don't know this game!")],
+                               id='game_autocomplete')
+    runner = wtforms.StringField('Runner', [validators.Length(max=512),
+                                            bestvods.validators.SatisfiesQuery(db,
+                                                                               queries.participant_exists,
+                                                                               "No such runner!")],
+                                 id='runner_autocomplete')
+    commentator = wtforms.StringField('Commentator', [validators.Length(max=512),
+                                                      bestvods.validators.SatisfiesQuery(db,
+                                                                                         queries.participant_exists,
+                                                                                         "No such runner!")],
+                                      id='commentator_autocomplete')
+    search = wtforms.SubmitField()

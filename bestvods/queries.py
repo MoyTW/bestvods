@@ -104,7 +104,7 @@ def insert_event(db: f_alchemy.SQLAlchemy, name, start_date: datetime.date, end_
 
 
 def select_participant(db: f_alchemy.SQLAlchemy, handle):
-    return db.engine.execute('select * from participant where handle=:handle', handle=handle).first()[0]
+    return db.engine.execute('select * from participant where handle=:handle', handle=handle).first()
 
 
 def participant_exists(db: f_alchemy.SQLAlchemy, handle):
@@ -147,3 +147,28 @@ def insert_vod(db: f_alchemy.SQLAlchemy, links, game_name_release_year, platform
             transaction.execute(sql, vod_id=vod_id, handle=handle)
 
     return True
+
+
+def search_vod(db: f_alchemy, game_name_release_year, runner_handle, commentator_handle, limit=50):
+    game = select_game(db, game_name_release_year)
+    if game is None:
+        game_id = None
+    else:
+        game_id = game['id']
+
+    runner = select_participant(db, runner_handle)
+    runner_id = None if runner is None else runner['id']
+    commentator = select_participant(db, commentator_handle)
+    commentator_id = None if commentator is None else commentator['id']
+
+    return db.engine.execute('''select * from vod
+                             join game on vod.game_id=game.id
+                             join vods_runners on vod.id=vods_runners.vod_id
+                             left join vods_commentators on vod.id=vods_commentators.vod_id
+                             where (vod.game_id=:game_id or :game_id is null) and
+                                (vods_runners.participant_id=:runner_id or :runner_id is null) and
+                                (vods_commentators.participant_id=:commentator_id or :commentator_id is null)
+                             limit :limit
+                                ''',
+                             game_id=game_id, runner_id=runner_id, commentator_id=commentator_id, limit=limit)\
+        .fetchall()
