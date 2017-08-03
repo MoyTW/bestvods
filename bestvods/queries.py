@@ -167,6 +167,7 @@ where (vod.game_id=:game_id or :game_id is null) and
 limit :limit
 """
 
+
 def search_vod(db: f_alchemy, game_name_release_year, runner_handle, commentator_handle, limit=50):
     game = select_game(db, game_name_release_year)
     if game is None:

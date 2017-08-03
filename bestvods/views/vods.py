@@ -43,7 +43,7 @@ def search():
     vod_strs = []
     form = forms.SearchVoDsForm(flask.request.form)
 
-    if flask.request.method == 'POST':
+    if flask.request.method == 'POST' and form.validate():
         rows = queries.search_vod(db, form.game.data, form.runner.data, form.commentator.data)
         vod_strs = [str(row) for row in rows]
         return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)

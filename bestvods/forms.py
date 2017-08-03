@@ -133,18 +133,18 @@ class AddVoDForm(wtforms.Form):
 class SearchVoDsForm(wtforms.Form):
     game = wtforms.StringField('Game',
                                [validators.Length(max=256 + 7),
-                                bestvods.validators.SatisfiesQuery(db,
-                                                                   queries.game_exists,
-                                                                   "I don't know this game!")],
+                                bestvods.validators.EmptyOrSatisfiesQuery(db,
+                                                                          queries.game_exists,
+                                                                          "I don't know this game!")],
                                id='game_autocomplete')
     runner = wtforms.StringField('Runner', [validators.Length(max=512),
-                                            bestvods.validators.SatisfiesQuery(db,
-                                                                               queries.participant_exists,
-                                                                               "No such runner!")],
+                                            bestvods.validators.EmptyOrSatisfiesQuery(db,
+                                                                                      queries.participant_exists,
+                                                                                      "No such runner!")],
                                  id='runner_autocomplete')
     commentator = wtforms.StringField('Commentator', [validators.Length(max=512),
-                                                      bestvods.validators.SatisfiesQuery(db,
-                                                                                         queries.participant_exists,
-                                                                                         "No such runner!")],
+                                                      bestvods.validators.EmptyOrSatisfiesQuery(db,
+                                                                                                queries.participant_exists,
+                                                                                                "No such runner!")],
                                       id='commentator_autocomplete')
     search = wtforms.SubmitField()
