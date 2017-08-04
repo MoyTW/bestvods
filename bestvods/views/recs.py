@@ -10,7 +10,7 @@ blueprint = flask.Blueprint('recs', __name__, template_folder='templates')
 
 
 select_rec = """
-select user.email, user_rec.id, game.name, vod.run_time_seconds, user_rec.description from user_rec
+select user.handle, user_rec.id, game.name, vod.run_time_seconds, user_rec.description from user_rec
 join user on user_rec.user_id=user.id
 join vod on user_rec.vod_id=vod.id
 join game on vod.game_id=game.id
