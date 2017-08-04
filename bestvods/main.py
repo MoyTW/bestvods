@@ -35,6 +35,7 @@ app.register_blueprint(views.games.blueprint, url_prefix='/games')
 app.register_blueprint(views.platforms.blueprint, url_prefix='/platforms')
 app.register_blueprint(views.vods.blueprint, url_prefix='/vods')
 app.register_blueprint(views.participants.blueprint, url_prefix='/participants')
+app.register_blueprint(views.recs.blueprint, url_prefix='/recs')
 
 # Setup security
 user_datastore = security.SQLAlchemyUserDatastore(db, models.User, models.Role)

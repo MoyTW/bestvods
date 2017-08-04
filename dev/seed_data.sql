@@ -2,6 +2,8 @@ PRAGMA foreign_keys = ON;
 
 delete from user;
 insert into user values (null, 'test@test.com', 'password', 1);
+insert into user values (null, 'one@test.com', 'password', 1);
+insert into user values (null, 'two@test.com', 'password', 1);
 
 -- Game
 delete from game;
@@ -67,3 +69,27 @@ delete from vods_commentators;
 insert into vods_commentators values(
        (select id from vod where game_id=(select id from game where name='Freedom Planet')),
        (select id from participant where handle='SuccinctAndPunchy'));
+
+-- Tags
+delete from tag;
+insert into tag values('funny', 'hilarious!');
+insert into tag values('good commentary', 'good commentary');
+insert into tag values('technical', 'really impressive execution');
+
+-- User Recs
+delete from user_rec; delete from user_recs_tags;
+insert into user_rec values(null,
+       '120 star is da best',
+       (select id from user where email='one@test.com'),
+       (select id from vod where game_id=(select id from game where name='Super Mario 64')));
+insert into user_recs_tags values((select last_insert_rowid()), 'funny');
+insert into user_recs_tags values((select last_insert_rowid()), 'technical');
+insert into user_rec values(null,
+       'S&P is fun times',
+       (select id from user where email='one@test.com'),
+       (select id from vod where game_id=(select id from game where name='Freedom Planet')));
+insert into user_recs_tags values((select last_insert_rowid()), 'good commentary');
+insert into user_rec values(null,
+       'I too like 120 star',
+       (select id from user where email='two@test.com'),
+       (select id from vod where game_id=(select id from game where name='Super Mario 64')));

@@ -154,8 +154,8 @@ create table user_rec (
 drop table if exists user_recs_tags;
 create table user_recs_tags (
        user_rec_id integer not null,
-       tag_id integer not null,
+       tag_name text not null,
 
        foreign key (user_rec_id) references user_rec(id),
-       foreign key (tag_id) references tag(id)
+       foreign key (tag_name) references tag(name)
 );
