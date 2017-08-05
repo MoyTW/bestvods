@@ -54,6 +54,9 @@ class Game(Base):
         except ValueError:
             return [None, None]
 
+    def __repr__(self):
+        return '<Game %r>' % self.name_release_year
+
 
 class Category(Base):
     name = db.Column(db.String(255), nullable=False)
@@ -77,8 +80,25 @@ class Platform(Base):
         self.description = description
 
 
+vods_event = db.Table('vods_event',
+                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
+                      db.Column('event_id', db.Integer(), db.ForeignKey('event.id')),
+                      db.UniqueConstraint('vod_id', 'event_id'))
+
+
 class Event(Base):
     name = db.Column(db.String(255), nullable=False)
     date_start = db.Column(db.Date, nullable=False)
     date_end = db.Column(db.Date, nullable=False)
     description = db.Column(db.String(2048), nullable=False)
+
+
+class Vod(Base):
+    run_time_seconds = db.Column(db.Integer, nullable=False)
+    date_completed = db.Column(db.Date, nullable=False)
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
+    platform_id = db.Column(db.Integer, db.ForeignKey('platform.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+
+    event = db.relationship('Event', secondary=vods_event, backref=db.backref('vods', lazy='dynamic'))
+    game = db.relationship('Game')

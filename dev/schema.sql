@@ -103,7 +103,7 @@ create table vod (
        timestamp_modified text not null,
 
        run_time_seconds integer not null,
-       completed_date text not null, -- YY-MM-DD
+       date_completed text not null, -- YY-MM-DD
 
        game_id integer not null,
        platform_id integer not null,

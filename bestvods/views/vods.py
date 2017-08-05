@@ -4,37 +4,16 @@ import flask
 
 from flask_security import login_required
 from bestvods.database import db
+from bestvods.models import Vod, Game
 
 
 blueprint = flask.Blueprint('vods', __name__, template_folder='templates')
 
 
-def query_vod(vod_id: int):
-    select_game = """
-    select vod.id, game.name, platform_name, category.name from vod
-    join game on vod.game_id=game.id
-    join category on vod.category_id=category.id
-    where vod.id=:id
-    """
-    select_links = 'select uri from vod_links where vod_id=:id'
-    select_runners = 'select participant.handle from participant ' \
-                     'join vods_runners on participant.id=vods_runners.participant_id ' \
-                     'where vod_id=:id'
-    select_commentators = 'select participant.handle from participant ' \
-                          'join vods_commentators on participant.id=vods_commentators.participant_id ' \
-                          'where vod_id=:id'
-    vod = db.engine.execute(select_game, id=vod_id).first()
-    links = db.engine.execute(select_links, id=vod_id).fetchall()
-    participants = db.engine.execute(select_runners, id=vod_id).fetchall()
-    commentators = db.engine.execute(select_commentators, id=vod_id).fetchall()
-    return str(vod) + ' Link(s): ' + str(links) + ' Runner(s): ' + str(participants) + \
-           ' Commentators: ' + str(commentators)
-
-
 @blueprint.route('/', methods=['GET'])
 def root():
-    all_ids = db.engine.execute('select id from vod').fetchall()
-    strings = [query_vod(vod_id[0]) for vod_id in all_ids]
+    vods = Vod.query.limit(50).all()
+    strings = [[(k, v) for k, v in vod.__dict__.items() if not k.startswith('_')] for vod in vods]
     return flask.render_template('_list.html', list_header='VoDs', items=strings)
 
 
@@ -44,8 +23,18 @@ def search():
     form = forms.SearchVoDsForm(flask.request.form)
 
     if flask.request.method == 'POST' and form.validate():
-        rows = queries.search_vod(db, form.game.data, form.runner.data, form.commentator.data)
-        vod_strs = [str(row) for row in rows]
+        query = Vod.query;
+        if form.game.data is not None:
+            name, release_year = Game.parse_name_release_year(form.game.data)
+            query = query.filter(Vod.game.has(name=name, release_year=release_year))
+        # TODO: Refine search
+        if form.runner.data is not None:
+            print('TODO Runner')
+        if form.commentator.data is not None:
+            print('TODO Commentator')
+
+        rows = query.all()
+        vod_strs = [[(k, v) for k, v in vod.__dict__.items() if not k.startswith('_')] for vod in rows]
         return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)
 
     return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)
