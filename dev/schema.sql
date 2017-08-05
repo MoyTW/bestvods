@@ -76,6 +76,9 @@ create table platform (
 drop table if exists event;
 create table event (
        id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
        name text not null unique,
        -- sqlite has no date storage type - unfortunate...
        start_date text not null, -- YYYY-MM-DD

@@ -75,3 +75,10 @@ class Platform(Base):
     def __init__(self, name, description):
         self.name = name
         self.description = description
+
+
+class Event(Base):
+    name = db.Column(db.String(255), nullable=False)
+    date_start = db.Column(db.Date, nullable=False)
+    date_end = db.Column(db.Date, nullable=False)
+    description = db.Column(db.String(2048), nullable=False)

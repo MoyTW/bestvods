@@ -54,9 +54,9 @@ insert into participant values(null, 'SuccinctAndPunchy', 'https://www.twitch.tv
 
 -- Events
 delete from event;
-insert into event values(null, 'ESA 2017', '2017-07-22', '2017-07-29', 'ESA 2017 had two streams!');
-insert into event values(null, 'SGDQ 2017', '2017-07-02', '2017-07-09', 'The FF7 run was surprisingly good.');
-insert into event values(null, 'AGDQ 2017', '2017-01-08', '2017-01-14', 'AWFUL BLOCK YES');
+insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ESA 2017', '2017-07-22', '2017-07-29', 'ESA 2017 had two streams!');
+insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'SGDQ 2017', '2017-07-02', '2017-07-09', 'The FF7 run was surprisingly good.');
+insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'AGDQ 2017', '2017-01-08', '2017-01-14', 'AWFUL BLOCK YES');
 
 -- VoDs
 delete from vod;
