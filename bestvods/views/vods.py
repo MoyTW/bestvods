@@ -23,14 +23,14 @@ def search():
     form = forms.SearchVoDsForm(flask.request.form)
 
     if flask.request.method == 'POST' and form.validate():
-        query = Vod.query;
-        if form.game.data is not None:
+        query = Vod.query
+        if form.game.data != '':
             name, release_year = Game.parse_name_release_year(form.game.data)
             query = query.filter(Vod.game.has(name=name, release_year=release_year))
         # TODO: Refine search
-        if form.runner.data is not None:
+        if form.runner.data != '':
             print('TODO Runner')
-        if form.commentator.data is not None:
+        if form.commentator.data != '':
             print('TODO Commentator')
 
         rows = query.all()

@@ -105,23 +105,17 @@ class AddVoDForm(wtforms.Form):
     game = wtforms.StringField('Game',
                                [validators.DataRequired(),
                                 validators.Length(max=256+7),
-                                bestvods.validators.SatisfiesQuery(db,
-                                                                   queries.game_exists,
-                                                                   "I don't know this game!")],
+                                bestvods.validators.GameExists()],
                                id='game_autocomplete')
     platform = wtforms.StringField('Platform',
                                    [validators.DataRequired(),
                                     validators.Length(max=256),
-                                    bestvods.validators.SatisfiesQuery(db,
-                                                                       queries.platform_exists,
-                                                                       "I don't know this platform!")],
+                                    bestvods.validators.PlatformExists()],
                                    id='platform_autocomplete')
     category = wtforms.StringField('Category',
                                    [validators.DataRequired(),
                                     validators.Length(max=256),
-                                    bestvods.validators.SatisfiesQuery(db,
-                                                                       queries.category_exists,
-                                                                       "I don't know this category!")],
+                                    bestvods.validators.CategoryExists(game_field_name='game')],
                                    id='category_autocomplete')
     time = wtforms.FormField(HHMMSSForm)
     date_completed = wtforms.FormField(DateForm)
@@ -133,9 +127,7 @@ class AddVoDForm(wtforms.Form):
 class SearchVoDsForm(wtforms.Form):
     game = wtforms.StringField('Game',
                                [validators.Length(max=256 + 7),
-                                bestvods.validators.EmptyOrSatisfiesQuery(db,
-                                                                          queries.game_exists,
-                                                                          "I don't know this game!")],
+                                bestvods.validators.GameExists(allow_empty=True)],
                                id='game_autocomplete')
     runner = wtforms.StringField('Runner', [validators.Length(max=512),
                                             bestvods.validators.EmptyOrSatisfiesQuery(db,
