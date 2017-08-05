@@ -126,7 +126,10 @@ create table vod_links (
 drop table if exists participant;
 create table participant (
        id integer primary key autoincrement,
-       handle text not null,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
+       handle text not null unique,
        stream_url text not null
 );
 

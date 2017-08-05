@@ -46,11 +46,11 @@ insert into category values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
 
 -- Participant
 delete from participant;
-insert into participant values(null, 'Cheese05', 'https://www.twitch.tv/cheese05');
-insert into participant values(null, 'DoDeChehedron', 'https://www.twitch.tv/dodechehedron');
-insert into participant values(null, 'BubblesdelFuego', 'https://www.twitch.tv/bubblesdelfuego');
-insert into participant values(null, 'Fladervy', 'https://www.twitch.tv/fladervy');
-insert into participant values(null, 'SuccinctAndPunchy', 'https://www.twitch.tv/succinctandpunchy');
+insert into participant values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Cheese05', 'https://www.twitch.tv/cheese05');
+insert into participant values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'DoDeChehedron', 'https://www.twitch.tv/dodechehedron');
+insert into participant values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'BubblesdelFuego', 'https://www.twitch.tv/bubblesdelfuego');
+insert into participant values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Fladervy', 'https://www.twitch.tv/fladervy');
+insert into participant values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'SuccinctAndPunchy', 'https://www.twitch.tv/succinctandpunchy');
 
 -- Events
 delete from event;

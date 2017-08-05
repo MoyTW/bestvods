@@ -41,7 +41,7 @@ def add():
             flask.flash('Inserted platform: ' + platform.name)
             return flask.redirect(flask.url_for('platforms.add'))
         except sqlalchemy.exc.IntegrityError:
-            flask.flash('Platform ' + platform.name + ' already exists')
+            flask.flash('Platform ' + form.name.data + ' already exists')
             return flask.redirect(flask.url_for('platforms.add'))
     return flask.render_template('_resource_add.html',
                                  resource_name='Platform',

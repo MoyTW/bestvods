@@ -1,7 +1,7 @@
 import flask_sqlalchemy as f_alchemy
 import wtforms
 
-from bestvods.models import Game, Platform
+from bestvods.models import Game, Platform, Participant
 
 
 class _RowExists:
@@ -53,6 +53,17 @@ class CategoryExists(_RowExists):
         name, release_year = Game.parse_name_release_year(game_field.data)
         game = Game.query.filter_by(name=name, release_year=release_year).first()
         if game is None or game.categories.filter_by(name=field.data).first() is None:
+            raise wtforms.ValidationError(self.message)
+
+
+class ParticipantExists(_RowExists):
+    def __init__(self, allow_empty=False, message=u"Runner/commentator not found!"):
+        super().__init__(allow_empty=allow_empty, message=message)
+
+    def __call__(self, form, field):
+        super().__call__(form, field)
+
+        if Participant.query.filter_by(handle=field.data).first() is None:
             raise wtforms.ValidationError(self.message)
 
 

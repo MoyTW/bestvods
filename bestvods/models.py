@@ -80,17 +80,26 @@ class Platform(Base):
         self.description = description
 
 
-vods_event = db.Table('vods_event',
-                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
-                      db.Column('event_id', db.Integer(), db.ForeignKey('event.id')),
-                      db.UniqueConstraint('vod_id', 'event_id'))
-
-
 class Event(Base):
     name = db.Column(db.String(255), nullable=False)
     date_start = db.Column(db.Date, nullable=False)
     date_end = db.Column(db.Date, nullable=False)
     description = db.Column(db.String(2048), nullable=False)
+
+
+class Participant(Base):
+    handle = db.Column(db.String(255), nullable=False, unique=True)
+    stream_url = db.Column(db.String(2048), nullable=False)
+
+    def __init__(self, handle, stream_url):
+        self.handle = handle
+        self.stream_url = stream_url
+
+
+vods_event = db.Table('vods_event',
+                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
+                      db.Column('event_id', db.Integer(), db.ForeignKey('event.id')),
+                      db.UniqueConstraint('vod_id', 'event_id'))
 
 
 class Vod(Base):
