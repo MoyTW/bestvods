@@ -2,7 +2,6 @@ import datetime
 import sqlite3
 import flask_testing
 import bestvods.main as app
-import bestvods.queries as queries
 
 test_config = {
     'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + app.ROOT_DIR + '/../dev/test.db',

@@ -1,10 +1,7 @@
-import bestvods.queries as queries
 import bestvods.validators
 import datetime
 import wtforms
 import wtforms.validators as validators
-
-from bestvods.database import db
 
 
 class LinksForm(wtforms.Form):

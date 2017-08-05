@@ -1,13 +1,8 @@
 import os
 import flask
 import flask_security as security
-import wtforms
-import wtforms.validators as validators
-# Decorators don't play nicely with namespaces it seems
-from flask_security import login_required
 import bestvods.database
 import bestvods.models as models
-import bestvods.queries as queries
 import bestvods.views as views
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
