@@ -31,52 +31,6 @@ class BaseQueryTest(flask_testing.TestCase):
         app.db.drop_all()
 
 
-class InsertGameTest(BaseQueryTest):
-    @staticmethod
-    def test_game_inserts_once():
-        queries.insert_game(app.db, 'n', 2004, 'The original')
-        result = app.db.engine.execute('select * from game').fetchall()
-
-        last_row = result[0]
-        assert last_row[0] == 1
-        assert timestamp_almost_now(last_row[1])
-        assert last_row[2] == 'n'
-        assert last_row[3] == 2004
-        assert last_row[4] == 'The original'
-        assert len(result) == 1
-
-    @staticmethod
-    def test_game_inserts_only_once():
-        queries.insert_game(app.db, 'n', 2004, 'The original')
-        queries.insert_game(app.db, 'n', 2004, 'The original')
-        result = app.db.engine.execute('select * from game').fetchall()
-        assert len(result) == 1
-
-    @staticmethod
-    def test_game_inserts_multiple():
-        queries.insert_game(app.db, 'n', 2004, 'The original')
-        queries.insert_game(app.db, 'n+', 2008, 'The sequel')
-        queries.insert_game(app.db, 'n++', 2015, 'Not a programming language surprisingly')
-        result = app.db.engine.execute('select * from game').fetchall()
-
-        last_row = result[2]
-        assert last_row[0] == 3
-        assert timestamp_almost_now(last_row[1])
-        assert last_row[2] == 'n++'
-        assert last_row[3] == 2015
-        assert last_row[4] == 'Not a programming language surprisingly'
-        assert len(result) == 3
-
-    @staticmethod
-    def test_differentiates_by_year():
-        queries.insert_game(app.db, 'Doom', 1993, 'Old')
-        queries.insert_game(app.db, 'Doom', 2016, 'New')
-        result = app.db.engine.execute('select name, release_year from game').fetchall()
-        assert result[0] == ('Doom', 1993)
-        assert result[1] == ('Doom', 2016)
-        assert len(result) == 2
-
-
 class InsertCategoryTest(BaseQueryTest):
     def setUp(self):
         super().setUp()

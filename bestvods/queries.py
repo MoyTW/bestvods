@@ -12,7 +12,7 @@ def parse_name_release_year(name_release_year):
 _insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
 
-def select_game(db: f_alchemy.SQLAlchemy, name_release_year):
+def _select_game(db: f_alchemy.SQLAlchemy, name_release_year):
     try:
         release_year = int(name_release_year[-6:].strip('()'))
     except ValueError:
@@ -37,26 +37,11 @@ def game_exists(db: f_alchemy.SQLAlchemy, name_release_year):
     return result.first()[0]
 
 
-_insert_game_text = alchemy.text("insert into game values (null, CURRENT_TIMESTAMP, :name, :release_year, :description)")
-
-
-# The following functions have a lot of duplication!
-def insert_game(db: f_alchemy.SQLAlchemy, name, release_year: int, description):
-    try:
-        db.engine.execute(_insert_game_text,
-                          name=name.strip(),
-                          release_year=release_year,
-                          description=description.strip())
-        return True
-    except alchemy_exc.IntegrityError:
-        return False
-
-
 def category_exists(db: f_alchemy.SQLAlchemy, category):
     return db.engine.execute('select count(*) from category where name=:name', name=category).first()[0]
 
 _insert_category_text = alchemy.text("insert into category values "
-                                     "(null, CURRENT_TIMESTAMP, :name, :description, :game_id)")
+                                     "(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, :name, :description, :game_id)")
 
 
 def insert_category(db: f_alchemy.SQLAlchemy, game_id: int, name, description):
@@ -129,7 +114,7 @@ insert into vod values(null, CURRENT_TIMESTAMP, :run_time_seconds, :completed_da
 
 def insert_vod(db: f_alchemy.SQLAlchemy, links, game_name_release_year, platform_name, category_name, run_time_seconds,
                completed_date: datetime.date, runner_handles, commentator_handles):
-    game = select_game(db, game_name_release_year)
+    game = _select_game(db, game_name_release_year)
     if game is None:
         return False
 
@@ -169,7 +154,7 @@ limit :limit
 
 
 def search_vod(db: f_alchemy, game_name_release_year, runner_handle, commentator_handle, limit=50):
-    game = select_game(db, game_name_release_year)
+    game = _select_game(db, game_name_release_year)
     if game is None:
         game_id = None
     else:

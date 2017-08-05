@@ -34,10 +34,25 @@ create table roles_users (
 
 /* VoDs */
 
+drop table if exists game;
+create table game (
+       id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
+       name text not null,
+       release_year integer not null,
+
+       description text not null,
+
+       unique (name, release_year)
+);
+
 drop table if exists category;
 create table category (
        id integer primary key autoincrement,
-       added_at text not null, -- YYYY-MM-DDTHH:MM:SS
+       timestamp_created text not null,
+       timestamp_modified text not null,
 
        name text not null,
        description text not null,
@@ -46,19 +61,6 @@ create table category (
 
        unique (name, game_id),
        foreign key(game_id) references game(id)
-);
-
-drop table if exists game;
-create table game (
-       id integer primary key autoincrement,
-       added_at text not null, -- YYYY-MM-DDTHH:MM:SS
-
-       name text not null,
-       release_year integer not null,
-
-       description text not null,
-
-       unique (name, release_year)
 );
 
 drop table if exists platform;

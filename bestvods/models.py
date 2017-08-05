@@ -28,3 +28,28 @@ class User(Base, security.UserMixin):
     active = db.Column(db.Boolean(), nullable=False)
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+
+# Games
+class Game(Base):
+    name = db.Column(db.String(255), nullable=False)
+    release_year = db.Column(db.SmallInteger, nullable=False)
+    description = db.Column(db.String(2048), nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('name', 'release_year'),)
+
+    def __init__(self, name, release_year: int, description):
+        self.name = name
+        self.release_year = release_year
+        self.description = description
+
+    @property
+    def name_release_year(self):
+        return self.name + ' (' + str(self.release_year) + ')'
+
+    @staticmethod
+    def parse_name_release_year(name_release_year):
+        try:
+            return [name_release_year[:-6].strip(), int(name_release_year[-6:].strip('()'))]
+        except ValueError:
+            return [None, None]

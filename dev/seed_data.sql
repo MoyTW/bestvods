@@ -7,13 +7,13 @@ insert into user values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'two@test.c
 
 -- Game
 delete from game;
-insert into game values (null, CURRENT_TIMESTAMP, 'Super Mario 64', 1996, 'Mario in 3D!');
-insert into game values (null, CURRENT_TIMESTAMP, 'Super Panga World', 2015, 'A romhack, very hard.');
-insert into game values (null, CURRENT_TIMESTAMP, 'Dark Souls', 2011, 'SOOOOOUUUULS');
-insert into game values (null, CURRENT_TIMESTAMP, 'Freedom Planet', 2014, 'A Sonic Fangame');
-insert into game values (null, CURRENT_TIMESTAMP, 'Star Wars Jedi Knight II: Jedi Outcast', 2002, 'I never played this');
-insert into game values (null, CURRENT_TIMESTAMP, 'Star Wars Jedi Knight: Jedi Academy', 2003, 'TAKE A BATH');
-insert into game values (null, CURRENT_TIMESTAMP, 'Star Wars', 1991, 'It was for the NES? I thought it was a SNES game...');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Super Mario 64', 1996, 'Mario in 3D!');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Super Panga World', 2015, 'A romhack, very hard.');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Dark Souls', 2011, 'SOOOOOUUUULS');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Freedom Planet', 2014, 'A Sonic Fangame');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Star Wars Jedi Knight II: Jedi Outcast', 2002, 'I never played this');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Star Wars Jedi Knight: Jedi Academy', 2003, 'TAKE A BATH');
+insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Star Wars', 1991, 'It was for the NES? I thought it was a SNES game...');
 
 -- Platform
 delete from platform;
@@ -23,15 +23,25 @@ insert into platform values ('SNES', 'Super Nintendo Entertainment System. Super
 
 -- Category
 delete from category;
-insert into category values(null, CURRENT_TIMESTAMP, '120 Star', 'All 120 stars',
+insert into category values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+       '120 Star',
+       'All 120 stars',
        (select id from game where name='Super Mario 64'));
-insert into category values(null, CURRENT_TIMESTAMP, 'Any%', 'Finish the game with no conditions',
+insert into category values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+       'Any%',
+       'Finish the game with no conditions',
        (select id from game where name='Super Mario 64'));
-insert into category values(null, CURRENT_TIMESTAMP, 'Any%', 'Finish the game with no conditions',
+insert into category values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+       'Any%',
+       'Finish the game with no conditions',
        (select id from game where name='Super Panga World'));
-insert into category values(null, CURRENT_TIMESTAMP, 'Any% Kiln Skip', 'I have no idea what this category is',
+insert into category values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+       'Any% Kiln Skip',
+       'I have no idea what this category is',
        (select id from game where name='Dark Souls'));
-insert into category values(null, CURRENT_TIMESTAMP, 'Lilac Any%', 'Any% using Lilac',
+insert into category values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+       'Lilac Any%',
+       'Any% using Lilac',
        (select id from game where name='Freedom Planet'));
 
 -- Participant
