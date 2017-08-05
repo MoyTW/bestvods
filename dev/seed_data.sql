@@ -1,9 +1,9 @@
 PRAGMA foreign_keys = ON;
 
 delete from user;
-insert into user values (null, 'test@test.com', 'test user', 'password', 1);
-insert into user values (null, 'one@test.com', 'user one', 'password', 1);
-insert into user values (null, 'two@test.com', 'user two', 'password', 1);
+insert into user values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'test@test.com', 'test user', 'password', 1);
+insert into user values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'one@test.com', 'user one', 'password', 1);
+insert into user values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'two@test.com', 'user two', 'password', 1);
 
 -- Game
 delete from game;

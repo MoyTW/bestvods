@@ -5,6 +5,8 @@ PRAGMA foreign_keys = ON;
 drop table if exists user;
 create table user (
        id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
        email text not null,
        username text not null,
        password text not null,
@@ -14,6 +16,9 @@ create table user (
 drop table if exists role;
 create table role (
        id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
        name text not null,
        description text not null
 );
