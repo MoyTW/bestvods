@@ -116,7 +116,11 @@ create table vod (
 
 drop table if exists vod_links;
 create table vod_links (
-       uri text primary key,
+       id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
+       url text not null unique,
        vod_id integer not null,
        foreign key(vod_id) references vod(id)
 );

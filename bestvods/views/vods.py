@@ -15,7 +15,8 @@ def vod_string(vod: Vod):
                       'game: ' + vod.game.name,
                       'event: ' + vod.event[0].name if len(vod.event) > 0 else 'No Event',
                       'runners: [' + ','.join([p.handle for p in vod.runners]) + ']',
-                      'commentators: [' + ','.join([p.handle for p in vod.commentators]) + ']'])
+                      'commentators: [' + ','.join([p.handle for p in vod.commentators]) + ']',
+                      'links: [' + ' : '.join(l.url for l in vod.links) + ']'])
 
 
 @blueprint.route('/', methods=['GET'])

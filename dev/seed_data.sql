@@ -76,8 +76,20 @@ insert into vods_event values(
        (select id from vod where game_id=(select id from game where name='Super Mario 64')),
        (select id from event where name='SGDQ 2017'));
 insert into vods_runners values(
-       (select last_insert_rowid()),
+       (select id from vod where game_id=(select id from game where name='Super Mario 64')),
        (select id from participant where handle='Cheese05'));
+insert into vod_links values (
+       null,
+       CURRENT_TIMESTAMP,
+       CURRENT_TIMESTAMP,
+       'sm64 link',
+       (select id from vod where game_id=(select id from game where name='Super Mario 64')));
+insert into vod_links values (
+       null,
+       CURRENT_TIMESTAMP,
+       CURRENT_TIMESTAMP,
+       'another sm64 link',
+       (select id from vod where game_id=(select id from game where name='Super Mario 64')));
 
 insert into vod values(
        null,

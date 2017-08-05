@@ -119,8 +119,14 @@ class Vod(Base):
     platform_id = db.Column(db.Integer, db.ForeignKey('platform.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
+    links = db.relationship('VodLinks')
     game = db.relationship('Game')
     event = db.relationship('Event', secondary=vods_event, backref=db.backref('vods', lazy='dynamic'))
     runners = db.relationship('Participant', secondary=vods_runners, backref=db.backref('run_vods', lazy='dynamic'))
     commentators = db.relationship('Participant', secondary=vods_commentators,
                                    backref=db.backref('commentated_vods', lazy='dynamic'))
+
+
+class VodLinks(Base):
+    url = db.Column(db.String(2048), unique=True, nullable=False)
+    vod_id = db.Column(db.Integer, db.ForeignKey('vod.id'), nullable=False)
