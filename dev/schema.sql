@@ -62,6 +62,16 @@ create table platform (
        description text not null
 );
 
+drop table if exists event;
+create table event (
+       id integer primary key autoincrement,
+       name text not null unique,
+       -- sqlite has no date storage type - unfortunate...
+       start_date text not null, -- YYYY-MM-DD
+       end_date text not null, -- YYYY-MM-DD
+       description text not null
+);
+
 drop table if exists vod;
 create table vod (
        id integer primary key autoincrement,
@@ -73,10 +83,12 @@ create table vod (
        game_id integer not null,
        platform_name text not null,
        category_id integer not null,
+       event_id integer not null,
 
        foreign key (game_id) references game(id),
        foreign key (platform_name) references platform(name),
-       foreign key (category_id) references category(id)
+       foreign key (category_id) references category(id),
+       foreign key (event_id) references event(id)
 );
 
 drop table if exists vod_links;
@@ -84,25 +96,6 @@ create table vod_links (
        uri text primary key,
        vod_id integer not null,
        foreign key(vod_id) references vod(id)
-);
-
-/* Events */
-drop table if exists event;
-create table event (
-       name text primary key,
-       -- sqlite has no date storage type - unfortunate...
-       start_date text not null, -- YY-MM-DD
-       end_date text not null, -- YY-MM-DD
-       description text not null
-);
-
-drop table if exists vods_events;
-create table vods_events (
-       vod_id integer not null unique,
-       event_name text not null,
-
-       foreign key (vod_id) references vod(id),
-       foreign key (event_name) references event(name)
 );
 
 /* VoD participants */

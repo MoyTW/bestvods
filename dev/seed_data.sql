@@ -34,13 +34,6 @@ insert into category values(null, CURRENT_TIMESTAMP, 'Any% Kiln Skip', 'I have n
 insert into category values(null, CURRENT_TIMESTAMP, 'Lilac Any%', 'Any% using Lilac',
        (select id from game where name='Freedom Planet'));
 
--- VoD
-delete from vod;
-insert into vod values(null, CURRENT_TIMESTAMP,  6100, CURRENT_DATE, (select id from game where name='Super Mario 64'), 'N64', (select id from category where name='120 Star'));
-insert into vod values(null, CURRENT_TIMESTAMP,  2003, CURRENT_DATE, (select id from game where name='Super Panga World'), 'SNES', (select id from category where name='Any%'));
-insert into vod values(null, CURRENT_TIMESTAMP,  1745, CURRENT_DATE, (select id from game where name='Dark Souls'), 'PC', (select id from category where name='Any% Kiln Skip'));
-insert into vod values(null, CURRENT_TIMESTAMP,  2656, CURRENT_DATE, (select id from game where name='Freedom Planet'), 'PC', (select id from category where name='Lilac Any%'));
-
 -- Participant
 delete from participant;
 insert into participant values(null, 'Cheese05', 'https://www.twitch.tv/cheese05');
@@ -49,23 +42,68 @@ insert into participant values(null, 'BubblesdelFuego', 'https://www.twitch.tv/b
 insert into participant values(null, 'Fladervy', 'https://www.twitch.tv/fladervy');
 insert into participant values(null, 'SuccinctAndPunchy', 'https://www.twitch.tv/succinctandpunchy');
 
--- VoDs->Runners
-delete from vods_runners;
-insert into vods_runners values(
-       (select id from vod where game_id=(select id from game where name='Super Mario 64')),
-       (select id from participant where handle='Cheese05'));
-insert into vods_runners values(
-       (select id from vod where game_id=(select id from game where name='Super Panga World')),
-       (select id from participant where handle='DoDeChehedron'));
-insert into vods_runners values(
-       (select id from vod where game_id=(select id from game where name='Dark Souls')),
-       (select id from participant where handle='BubblesdelFuego'));
-insert into vods_runners values(
-       (select id from vod where game_id=(select id from game where name='Freedom Planet')),
-       (select id from participant where handle='Fladervy'));
+-- Events
+delete from event;
+insert into event values(null, 'ESA 2017', '2017-07-22', '2017-07-29', 'ESA 2017 had two streams!');
+insert into event values(null, 'SGDQ 2017', '2017-07-02', '2017-07-09', 'The FF7 run was surprisingly good.');
+insert into event values(null, 'AGDQ 2017', '2017-01-08', '2017-01-14', 'AWFUL BLOCK YES');
 
--- VoDs->Commentators
+-- VoDs
+delete from vod;
+delete from vods_runners;
 delete from vods_commentators;
+
+insert into vod values(
+       null,
+       CURRENT_TIMESTAMP,
+       6100,
+       CURRENT_DATE,
+       (select id from game where name='Super Mario 64'),
+       'N64',
+       (select id from category where name='120 Star'),
+       (select id from event where name='SGDQ 2017'));
+insert into vods_runners values(
+       (select last_insert_rowid()),
+       (select id from participant where handle='Cheese05'));
+
+insert into vod values(
+       null,
+       CURRENT_TIMESTAMP,
+       2003,
+       CURRENT_DATE,
+       (select id from game where name='Super Panga World'),
+       'SNES',
+       (select id from category where name='Any%'),
+       (select id from event where name='SGDQ 2017'));
+insert into vods_runners values(
+       (select last_insert_rowid()),
+       (select id from participant where handle='DoDeChehedron'));
+
+insert into vod values(
+       null,
+       CURRENT_TIMESTAMP,
+       1745,
+       CURRENT_DATE,
+       (select id from game where name='Dark Souls'),
+       'PC',
+       (select id from category where name='Any% Kiln Skip'),
+       (select id from event where name='AGDQ 2017'));
+insert into vods_runners values(
+       (select last_insert_rowid()),
+       (select id from participant where handle='BubblesdelFuego'));
+
+insert into vod values(
+       null,
+       CURRENT_TIMESTAMP,
+       2656,
+       CURRENT_DATE,
+       (select id from game where name='Freedom Planet'),
+       'PC',
+       (select id from category where name='Lilac Any%'),
+       (select id from event where name='ESA 2017'));
+insert into vods_runners values(
+       (select last_insert_rowid()),
+       (select id from participant where handle='Fladervy'));
 insert into vods_commentators values(
        (select id from vod where game_id=(select id from game where name='Freedom Planet')),
        (select id from participant where handle='SuccinctAndPunchy'));
