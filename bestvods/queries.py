@@ -8,7 +8,6 @@ def parse_name_release_year(name_release_year):
     return [name_release_year[:-6].strip(), int(name_release_year[-6:].strip('()'))]
 
 
-
 _insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
 
@@ -55,42 +54,12 @@ def insert_platform(db: f_alchemy.SQLAlchemy, name, description):
         return False
 
 
-# This one will wait a bit
-def insert_tag(db: f_alchemy.SQLAlchemy, name, description):
-    pass
-
-_insert_event_text = alchemy.text("insert into event values (:name, :start_date, :end_date, :description)")
-
-
-def insert_event(db: f_alchemy.SQLAlchemy, name, start_date: datetime.date, end_date: datetime.date, description):
-    try:
-        db.engine.execute(_insert_event_text,
-                          name=name,
-                          start_date=start_date,
-                          end_date=end_date,
-                          description=description)
-        return True
-    except alchemy_exc.IntegrityError:
-        return False
-
-
 def select_participant(db: f_alchemy.SQLAlchemy, handle):
     return db.engine.execute('select * from participant where handle=:handle', handle=handle).first()
 
 
 def participant_exists(db: f_alchemy.SQLAlchemy, handle):
     return db.engine.execute('select count(*) from participant where handle=:handle', handle=handle).first()[0]
-
-
-_insert_participant_text = alchemy.text("insert into participant values (null, :handle, :stream_url)")
-
-
-def insert_participant(db: f_alchemy.SQLAlchemy, handle, stream_url):
-    try:
-        db.engine.execute(_insert_participant_text, handle=handle, stream_url=stream_url)
-        return True
-    except alchemy_exc.IntegrityError:
-        return False
 
 _insert_vod_text = alchemy.text("""
 insert into vod values(null, CURRENT_TIMESTAMP, :run_time_seconds, :completed_date, :game_id, :platform_name,
