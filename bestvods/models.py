@@ -30,11 +30,11 @@ class User(Base, security.UserMixin):
                             backref=db.backref('users', lazy='dynamic'))
 
 
-# Games
 class Game(Base):
     name = db.Column(db.String(255), nullable=False)
     release_year = db.Column(db.SmallInteger, nullable=False)
     description = db.Column(db.String(2048), nullable=False)
+    categories = db.relationship('Category', backref='game', lazy='dynamic')
 
     __table_args__ = (db.UniqueConstraint('name', 'release_year'),)
 
@@ -53,3 +53,16 @@ class Game(Base):
             return [name_release_year[:-6].strip(), int(name_release_year[-6:].strip('()'))]
         except ValueError:
             return [None, None]
+
+
+class Category(Base):
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(2048), nullable=False)
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+
+    __table_args__ = (db.UniqueConstraint('name', 'game_id'),)
+
+    def __init__(self, name, description, game_id):
+        self.name = name
+        self.description = description
+        self.game_id = game_id

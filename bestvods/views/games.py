@@ -9,7 +9,7 @@ import wtforms.validators as validators
 
 from flask_security import login_required
 from bestvods.database import db
-from bestvods.models import Game
+from bestvods.models import Game, Category
 
 
 blueprint = flask.Blueprint('games', __name__, template_folder='templates')
@@ -78,16 +78,11 @@ def categories_root(name_release_year):
         flask.abort(404)
 
     term = flask.request.args['term']+'%' if 'term' in flask.request.args else '%'
+    categories = Category.query.filter(Category.game_id == game.id, Category.name.like(term)).limit(50)
 
     if utils.accepts_json(flask.request):
-        categories = db.engine.execute('select name from category '
-                                       'where game_id=:game_id and name like :term limit 10',
-                                       game_id=game.id, term=term).fetchall()
         return flask.Response(json.dumps([g.name for g in categories]), mimetype='application/json')
     else:
-        categories = db.engine.execute('select name, description from category '
-                                       'where game_id=:game_id and name like :term limit 50',
-                                       game_id=game.id, term=term).fetchall()
         strings = [p.name + ": " + p.description for p in categories]
         return flask.render_template('_list.html', list_header='categories for '+game.name, items=strings)
 
@@ -108,10 +103,16 @@ def categories_add(name_release_year):
     form = AddCategoryForm(flask.request.form)
 
     if flask.request.method == 'POST' and form.validate():
-        if queries.insert_category(db, game.id, form.name.data, form.description.data):
-            flask.flash('Inserted category')
-        else:
-            flask.flash('Category already exists')
+        try:
+            category = Category(form.name.data, form.description.data, game.id)
+            db.session.add(category)
+            db.session.commit()
+            flask.flash('Inserted category: ' + category.name)
+            return flask.redirect(flask.url_for('games.categories_add', name_release_year=name_release_year))
+        except sqlalchemy.exc.IntegrityError:
+            flask.flash('Category ' + form.name.data + ' already exists')
+            return flask.redirect(flask.url_for('games.categories_add', name_release_year=name_release_year))
+
     return flask.render_template('_resource_add.html',
                                  resource_name='Category',
                                  fields=[form.name, form.description])
