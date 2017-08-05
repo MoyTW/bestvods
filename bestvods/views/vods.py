@@ -10,10 +10,18 @@ from bestvods.models import Vod, Game
 blueprint = flask.Blueprint('vods', __name__, template_folder='templates')
 
 
+def vod_string(vod: Vod):
+    return ", ".join(['id: ' + str(vod.id),
+                      'game: ' + vod.game.name,
+                      'event: ' + vod.event[0].name if len(vod.event) > 0 else 'No Event',
+                      'runners: [' + ','.join([p.handle for p in vod.runners]) + ']',
+                      'commentators: [' + ','.join([p.handle for p in vod.commentators]) + ']'])
+
+
 @blueprint.route('/', methods=['GET'])
 def root():
     vods = Vod.query.limit(50).all()
-    strings = [[(k, v) for k, v in vod.__dict__.items() if not k.startswith('_')] for vod in vods]
+    strings = [vod_string(vod) for vod in vods]
     return flask.render_template('_list.html', list_header='VoDs', items=strings)
 
 
@@ -34,7 +42,7 @@ def search():
             print('TODO Commentator')
 
         rows = query.all()
-        vod_strs = [[(k, v) for k, v in vod.__dict__.items() if not k.startswith('_')] for vod in rows]
+        vod_strs = [vod_string(vod) for vod in rows]
         return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)
 
     return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)

@@ -81,8 +81,8 @@ create table event (
 
        name text not null unique,
        -- sqlite has no date storage type - unfortunate...
-       start_date text not null, -- YYYY-MM-DD
-       end_date text not null, -- YYYY-MM-DD
+       date_start text not null, -- YYYY-MM-DD
+       date_end text not null, -- YYYY-MM-DD
        description text not null
 );
 
@@ -138,6 +138,7 @@ create table vods_runners (
        vod_id integer not null,
        participant_id integer not null,
 
+       primary key (vod_id, participant_id)
        foreign key (vod_id) references vod(id),
        foreign key (participant_id) references participant(id)
 );
@@ -147,6 +148,7 @@ create table vods_commentators (
        vod_id integer not null,
        participant_id integer not null,
 
+       primary key (vod_id, participant_id),
        foreign key (vod_id) references vod(id),
        foreign key (participant_id) references participant(id)
 );

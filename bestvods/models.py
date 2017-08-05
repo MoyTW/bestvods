@@ -97,9 +97,19 @@ class Participant(Base):
 
 
 vods_event = db.Table('vods_event',
-                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
+                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id'), unique=True),
                       db.Column('event_id', db.Integer(), db.ForeignKey('event.id')),
-                      db.UniqueConstraint('vod_id', 'event_id'))
+                      db.PrimaryKeyConstraint('vod_id', 'event_id'))
+
+vods_runners = db.Table('vods_runners',
+                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
+                      db.Column('participant_id', db.Integer(), db.ForeignKey('participant.id')),
+                      db.PrimaryKeyConstraint('vod_id', 'participant_id'))
+
+vods_commentators = db.Table('vods_commentators',
+                             db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
+                             db.Column('participant_id', db.Integer(), db.ForeignKey('participant.id')),
+                             db.PrimaryKeyConstraint('vod_id', 'participant_id'))
 
 
 class Vod(Base):
@@ -109,5 +119,8 @@ class Vod(Base):
     platform_id = db.Column(db.Integer, db.ForeignKey('platform.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
-    event = db.relationship('Event', secondary=vods_event, backref=db.backref('vods', lazy='dynamic'))
     game = db.relationship('Game')
+    event = db.relationship('Event', secondary=vods_event, backref=db.backref('vods', lazy='dynamic'))
+    runners = db.relationship('Participant', secondary=vods_runners, backref=db.backref('run_vods', lazy='dynamic'))
+    commentators = db.relationship('Participant', secondary=vods_commentators,
+                                   backref=db.backref('commentated_vods', lazy='dynamic'))
