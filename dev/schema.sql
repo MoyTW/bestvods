@@ -86,10 +86,21 @@ create table event (
        description text not null
 );
 
+drop table if exists vods_event;
+create table vods_event (
+       vod_id integer not null unique,
+       event_id integer not null,
+
+       primary key (vod_id, event_id)
+       foreign key (vod_id) references vod(id),
+       foreign key (event_id) references event(id)
+);
+
 drop table if exists vod;
 create table vod (
        id integer primary key autoincrement,
-       added_at text not null, -- YYYY-MM-DDTHH:MM:SS
+       timestamp_created text not null,
+       timestamp_modified text not null,
 
        run_time_seconds integer not null,
        completed_date text not null, -- YY-MM-DD
@@ -97,12 +108,10 @@ create table vod (
        game_id integer not null,
        platform_id integer not null,
        category_id integer not null,
-       event_id integer not null,
 
        foreign key (game_id) references game(id),
        foreign key (platform_id) references platform(id),
-       foreign key (category_id) references category(id),
-       foreign key (event_id) references event(id)
+       foreign key (category_id) references category(id)
 );
 
 drop table if exists vod_links;

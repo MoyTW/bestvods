@@ -58,7 +58,7 @@ class Game(Base):
 class Category(Base):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(2048), nullable=False)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
 
     __table_args__ = (db.UniqueConstraint('name', 'game_id'),)
 
