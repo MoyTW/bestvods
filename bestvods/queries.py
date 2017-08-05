@@ -3,10 +3,6 @@ import sqlalchemy as alchemy
 import datetime
 
 
-def parse_name_release_year(name_release_year):
-    return [name_release_year[:-6].strip(), int(name_release_year[-6:].strip('()'))]
-
-
 def _select_game(db: f_alchemy.SQLAlchemy, name_release_year):
     try:
         release_year = int(name_release_year[-6:].strip('()'))
@@ -19,13 +15,6 @@ def _select_game(db: f_alchemy.SQLAlchemy, name_release_year):
                                release_year=release_year)
     return result.first()
 
-
-def select_participant(db: f_alchemy.SQLAlchemy, handle):
-    return db.engine.execute('select * from participant where handle=:handle', handle=handle).first()
-
-
-def participant_exists(db: f_alchemy.SQLAlchemy, handle):
-    return db.engine.execute('select count(*) from participant where handle=:handle', handle=handle).first()[0]
 
 _insert_vod_text = alchemy.text("""
 insert into vod values(null, CURRENT_TIMESTAMP, :run_time_seconds, :completed_date, :game_id, :platform_name,

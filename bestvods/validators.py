@@ -12,32 +12,29 @@ class _RowExists:
         else:
             self.message = message
 
+    def _row_missing(self, form, field):
+        raise NotImplementedError("This method is should be implemented in the child class!")
+
     def __call__(self, form, field):
-        if self.allow_empty and (field.data is None or field.data == ''):
-            return
+        if (not (self.allow_empty and (field.data is None or field.data == ''))) and self._row_missing(form, field):
+            raise wtforms.ValidationError(self.message)
 
 
 class GameExists(_RowExists):
     def __init__(self, allow_empty=False, message=u"Game not found!"):
         super().__init__(allow_empty=allow_empty, message=message)
 
-    def __call__(self, form, field):
-        super().__call__(form, field)
-
+    def _row_missing(self, form, field):
         name, release_year = Game.parse_name_release_year(field.data)
-        if Game.query.filter_by(name=name, release_year=release_year).first() is None:
-            raise wtforms.ValidationError(self.message)
+        return Game.query.filter_by(name=name, release_year=release_year).first() is None
 
 
 class PlatformExists(_RowExists):
     def __init__(self, allow_empty=False, message=u"Platform not found!"):
         super().__init__(allow_empty=allow_empty, message=message)
 
-    def __call__(self, form, field):
-        super().__call__(form, field)
-
-        if Platform.query.filter_by(name=field.data).first() is None:
-            raise wtforms.ValidationError(self.message)
+    def _row_missing(self, form, field):
+        return Platform.query.filter_by(name=field.data).first() is None
 
 
 class CategoryExists(_RowExists):
@@ -46,25 +43,19 @@ class CategoryExists(_RowExists):
 
         self.game_field_name = game_field_name
 
-    def __call__(self, form, field):
-        super().__call__(form, field)
-
+    def _row_missing(self, form, field):
         game_field = form._fields.get(self.game_field_name)
         name, release_year = Game.parse_name_release_year(game_field.data)
         game = Game.query.filter_by(name=name, release_year=release_year).first()
-        if game is None or game.categories.filter_by(name=field.data).first() is None:
-            raise wtforms.ValidationError(self.message)
+        return game is None or game.categories.filter_by(name=field.data).first() is None
 
 
 class ParticipantExists(_RowExists):
     def __init__(self, allow_empty=False, message=u"Runner/commentator not found!"):
         super().__init__(allow_empty=allow_empty, message=message)
 
-    def __call__(self, form, field):
-        super().__call__(form, field)
-
-        if Participant.query.filter_by(handle=field.data).first() is None:
-            raise wtforms.ValidationError(self.message)
+    def _row_missing(self, form, field):
+        return Participant.query.filter_by(handle=field.data).first() is None
 
 
 class SatisfiesQuery:
