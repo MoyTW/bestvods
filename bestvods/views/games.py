@@ -1,4 +1,3 @@
-import bestvods.queries as queries
 import bestvods.utils as utils
 import datetime
 import flask

@@ -17,9 +17,9 @@ insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Star Wars'
 
 -- Platform
 delete from platform;
-insert into platform values ('PC', 'Personal Computer (Windows)');
-insert into platform values ('N64', 'Had a really strange controller!');
-insert into platform values ('SNES', 'Super Nintendo Entertainment System. Super nostalgic.');
+insert into platform values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'PC', 'Personal Computer (Windows)');
+insert into platform values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'N64', 'Had a really strange controller!');
+insert into platform values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'SNES', 'Super Nintendo Entertainment System. Super nostalgic.');
 
 -- Category
 delete from category;
@@ -69,7 +69,7 @@ insert into vod values(
        6100,
        CURRENT_DATE,
        (select id from game where name='Super Mario 64'),
-       'N64',
+       (select id from platform where name='N64'),
        (select id from category where name='120 Star'),
        (select id from event where name='SGDQ 2017'));
 insert into vods_runners values(
@@ -82,7 +82,7 @@ insert into vod values(
        2003,
        CURRENT_DATE,
        (select id from game where name='Super Panga World'),
-       'SNES',
+       (select id from platform where name='SNES'),
        (select id from category where name='Any%'),
        (select id from event where name='SGDQ 2017'));
 insert into vods_runners values(
@@ -95,7 +95,7 @@ insert into vod values(
        1745,
        CURRENT_DATE,
        (select id from game where name='Dark Souls'),
-       'PC',
+       (select id from platform where name='PC'),
        (select id from category where name='Any% Kiln Skip'),
        (select id from event where name='AGDQ 2017'));
 insert into vods_runners values(
@@ -108,7 +108,7 @@ insert into vod values(
        2656,
        CURRENT_DATE,
        (select id from game where name='Freedom Planet'),
-       'PC',
+       (select id from platform where name='PC'),
        (select id from category where name='Lilac Any%'),
        (select id from event where name='ESA 2017'));
 insert into vods_runners values(

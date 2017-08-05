@@ -29,28 +29,3 @@ class BaseQueryTest(flask_testing.TestCase):
     def tearDown(self):
         app.db.session.remove()
         app.db.drop_all()
-
-
-class InsertPlatformTest(BaseQueryTest):
-    @staticmethod
-    def test_platform_inserts_once():
-        queries.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
-        result = app.db.engine.execute('select * from platform').fetchall()
-        assert result[0] == ('NES', 'Nintendo Entertainment System')
-        assert len(result) == 1
-
-    @staticmethod
-    def test_platform_inserts_only_once():
-        queries.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
-        queries.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
-        result = app.db.engine.execute('select * from platform').fetchall()
-        assert len(result) == 1
-
-    @staticmethod
-    def test_platform_inserts_multiple():
-        queries.insert_platform(app.db, 'NES', 'Nintendo Entertainment System')
-        queries.insert_platform(app.db, 'SNES', 'Super Nintendo Entertainment System')
-        queries.insert_platform(app.db, 'N64', 'Nintendo 64')
-        result = app.db.engine.execute('select * from platform').fetchall()
-        assert result[2] == ('N64', 'Nintendo 64')
-        assert len(result) == 3

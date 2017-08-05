@@ -66,3 +66,12 @@ class Category(Base):
         self.name = name
         self.description = description
         self.game_id = game_id
+
+
+class Platform(Base):
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(2048), nullable=False)
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description

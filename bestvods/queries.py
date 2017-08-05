@@ -1,14 +1,10 @@
 import flask_sqlalchemy as f_alchemy
 import sqlalchemy as alchemy
-import sqlalchemy.exc as alchemy_exc
 import datetime
 
 
 def parse_name_release_year(name_release_year):
     return [name_release_year[:-6].strip(), int(name_release_year[-6:].strip('()'))]
-
-
-_insert_platform_text = alchemy.text("insert into platform values (:name, :description)")
 
 
 def _select_game(db: f_alchemy.SQLAlchemy, name_release_year):
@@ -42,16 +38,6 @@ def category_exists(db: f_alchemy.SQLAlchemy, category):
 
 def platform_exists(db: f_alchemy.SQLAlchemy, platform):
     return db.engine.execute('select count(*) from platform where name=:name', name=platform).first()[0]
-
-
-def insert_platform(db: f_alchemy.SQLAlchemy, name, description):
-    try:
-        db.engine.execute(_insert_platform_text,
-                          name=name,
-                          description=description)
-        return True
-    except alchemy_exc.IntegrityError:
-        return False
 
 
 def select_participant(db: f_alchemy.SQLAlchemy, handle):

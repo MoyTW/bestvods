@@ -65,7 +65,11 @@ create table category (
 
 drop table if exists platform;
 create table platform (
-       name text not null primary key,
+       id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
+       name text not null unique,
        description text not null
 );
 
@@ -88,12 +92,12 @@ create table vod (
        completed_date text not null, -- YY-MM-DD
 
        game_id integer not null,
-       platform_name text not null,
+       platform_id integer not null,
        category_id integer not null,
        event_id integer not null,
 
        foreign key (game_id) references game(id),
-       foreign key (platform_name) references platform(name),
+       foreign key (platform_id) references platform(id),
        foreign key (category_id) references category(id),
        foreign key (event_id) references event(id)
 );
