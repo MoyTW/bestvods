@@ -184,3 +184,12 @@ class Vod(Base):
         vod.runners = Participant.query.filter(Participant.handle.in_(runner_handles)).all()
         vod.commentators = Participant.query.filter(Participant.handle.in_(commentator_handles)).all()
         return vod
+
+
+class Tag(Base):
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    description = db.Column(db.String(2048), nullable=False)
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description

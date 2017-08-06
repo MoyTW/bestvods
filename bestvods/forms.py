@@ -112,6 +112,12 @@ class AddEventForm(wtforms.Form):
             return True
 
 
+class AddTagForm(wtforms.Form):
+    name = wtforms.StringField('Name', [validators.DataRequired(), validators.Length(max=255)])
+    description = wtforms.StringField('Description', [validators.DataRequired(), validators.Length(max=2048)])
+    add_tag = wtforms.SubmitField()
+
+
 class AddVoDForm(wtforms.Form):
     links = wtforms.FormField(LinksForm)
     # This is kind of silly-looking, I admit. Just, like, formatting-wise.
