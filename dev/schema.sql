@@ -7,6 +7,7 @@ create table user (
        id integer primary key autoincrement,
        timestamp_created text not null,
        timestamp_modified text not null,
+
        email text not null,
        username text not null,
        password text not null,
@@ -161,13 +162,20 @@ create table vods_commentators (
 
 drop table if exists tag;
 create table tag (
-       name text primary key,
+       id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
+       name text not null unique,
        description text not null
 );
 
 drop table if exists user_rec;
 create table user_rec (
        id integer primary key autoincrement,
+       timestamp_created text not null,
+       timestamp_modified text not null,
+
        description text not null,
 
        user_id integer not null,

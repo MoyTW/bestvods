@@ -141,24 +141,24 @@ insert into vods_commentators values(
 
 -- Tags
 delete from tag;
-insert into tag values('funny', 'hilarious!');
-insert into tag values('good commentary', 'good commentary');
-insert into tag values('technical', 'really impressive execution');
+insert into tag values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'funny', 'hilarious!');
+insert into tag values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'good commentary', 'good commentary');
+insert into tag values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'technical', 'really impressive execution');
 
 -- User Recs
 delete from user_rec; delete from user_recs_tags;
-insert into user_rec values(null,
+insert into user_rec values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
        '120 star is da best',
        (select id from user where email='one@test.com'),
        (select id from vod where game_id=(select id from game where name='Super Mario 64')));
 insert into user_recs_tags values((select last_insert_rowid()), 'funny');
 insert into user_recs_tags values((select last_insert_rowid()), 'technical');
-insert into user_rec values(null,
+insert into user_rec values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
        'S&P is fun times',
        (select id from user where email='one@test.com'),
        (select id from vod where game_id=(select id from game where name='Freedom Planet')));
 insert into user_recs_tags values((select last_insert_rowid()), 'good commentary');
-insert into user_rec values(null,
+insert into user_rec values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
        'I too like 120 star',
        (select id from user where email='two@test.com'),
        (select id from vod where game_id=(select id from game where name='Super Mario 64')));
