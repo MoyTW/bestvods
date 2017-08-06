@@ -1,6 +1,6 @@
 import bestvods.forms as forms
-import bestvods.queries as queries
 import flask
+import sqlalchemy.exc
 
 from flask_security import login_required
 from bestvods.database import db
@@ -75,9 +75,15 @@ def add():
                 form.commentators.commentators.pop_entry()
 
         elif form.validate() and form.add_vod.data:
-            queries.insert_vod(db, form.links.links.data, form.game.data, form.platform.data, form.category.data,
-                               form.time.total_seconds, form.date_completed.date, form.runners.runners.data,
-                               form.commentators.commentators.data)
-            return flask.redirect(flask.url_for('vods.add'))
+            try:
+                vod = Vod.create_with_related(
+                    form.game.data, form.platform.data, form.category.data, form.time.total_seconds,
+                    form.date_completed.date, None, form.links.links.data, form.runners.runners.data,
+                    form.commentators.commentators.data)
+                db.session.add(vod)
+                db.session.commit()
+                return flask.redirect(flask.url_for('vods.add'))
+            except sqlalchemy.exc.IntegrityError:
+                flask.flash('A vod for URL one or more of the URLs already exists!')
 
     return flask.render_template('vod_add.html', form=form)

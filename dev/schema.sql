@@ -114,8 +114,8 @@ create table vod (
        foreign key (category_id) references category(id)
 );
 
-drop table if exists vod_links;
-create table vod_links (
+drop table if exists vod_link;
+create table vod_link (
        id integer primary key autoincrement,
        timestamp_created text not null,
        timestamp_modified text not null,

@@ -78,13 +78,13 @@ insert into vods_event values(
 insert into vods_runners values(
        (select id from vod where game_id=(select id from game where name='Super Mario 64')),
        (select id from participant where handle='Cheese05'));
-insert into vod_links values (
+insert into vod_link values (
        null,
        CURRENT_TIMESTAMP,
        CURRENT_TIMESTAMP,
        'sm64 link',
        (select id from vod where game_id=(select id from game where name='Super Mario 64')));
-insert into vod_links values (
+insert into vod_link values (
        null,
        CURRENT_TIMESTAMP,
        CURRENT_TIMESTAMP,

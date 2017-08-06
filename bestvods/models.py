@@ -1,6 +1,7 @@
 import flask_security as security
 
 from bestvods.database import db
+from typing import List
 
 
 class Base(db.Model):
@@ -54,6 +55,11 @@ class Game(Base):
         except ValueError:
             return [None, None]
 
+    @staticmethod
+    def query_by_name_release_year(name_release_year):
+        name, release_year = Game.parse_name_release_year(name_release_year)
+        return Game.query.filter_by(name=name, release_year=release_year).first()
+
     def __repr__(self):
         return '<Game %r>' % self.name_release_year
 
@@ -102,9 +108,9 @@ vods_event = db.Table('vods_event',
                       db.PrimaryKeyConstraint('vod_id', 'event_id'))
 
 vods_runners = db.Table('vods_runners',
-                      db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
-                      db.Column('participant_id', db.Integer(), db.ForeignKey('participant.id')),
-                      db.PrimaryKeyConstraint('vod_id', 'participant_id'))
+                        db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
+                        db.Column('participant_id', db.Integer(), db.ForeignKey('participant.id')),
+                        db.PrimaryKeyConstraint('vod_id', 'participant_id'))
 
 vods_commentators = db.Table('vods_commentators',
                              db.Column('vod_id', db.Integer(), db.ForeignKey('vod.id')),
@@ -112,21 +118,63 @@ vods_commentators = db.Table('vods_commentators',
                              db.PrimaryKeyConstraint('vod_id', 'participant_id'))
 
 
+class VodLink(Base):
+    url = db.Column(db.String(2048), unique=True, nullable=False)
+    vod_id = db.Column(db.Integer, db.ForeignKey('vod.id'), nullable=False)
+
+    def __init__(self, url, vod_id):
+        self.url = url
+        self.vod_id = vod_id
+
+
 class Vod(Base):
     run_time_seconds = db.Column(db.Integer, nullable=False)
     date_completed = db.Column(db.Date, nullable=False)
+
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
     platform_id = db.Column(db.Integer, db.ForeignKey('platform.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
-    links = db.relationship('VodLinks')
     game = db.relationship('Game')
+    platform = db.relationship('Platform')
+    category = db.relationship('Category')
+
+    # links should be a 1...n relationship with n >= 1; however, the logical relational database model used by SQL
+    # doesn't actually support these semantics. This means links is in an awkward place, and that constraint must be
+    # enforced in the application.
+    #
+    # These links should logically be managed inside of Vod, as opposed to game/platform/events/runners which are
+    # resources not depending on Vod.
+    links = db.relationship('VodLink')
+
     event = db.relationship('Event', secondary=vods_event, backref=db.backref('vods', lazy='dynamic'))
     runners = db.relationship('Participant', secondary=vods_runners, backref=db.backref('run_vods', lazy='dynamic'))
     commentators = db.relationship('Participant', secondary=vods_commentators,
                                    backref=db.backref('commentated_vods', lazy='dynamic'))
 
+    def __init__(self, game, platform, category, run_time_seconds, date_completed):
+        self.run_time_seconds = run_time_seconds
+        self.date_completed = date_completed
 
-class VodLinks(Base):
-    url = db.Column(db.String(2048), unique=True, nullable=False)
-    vod_id = db.Column(db.Integer, db.ForeignKey('vod.id'), nullable=False)
+        # The relationships can infer the ID fields when you set the object
+        self.game = game
+        self.platform = platform
+        self.category = category
+
+    @staticmethod
+    def create_with_related(name_release_year, platform_name, category_name, run_time_seconds, date_completed,
+                            event_name, link_urls: List[str], runner_handles: List[str],
+                            commentator_handles: List[str]):
+        game = Game.query_by_name_release_year(name_release_year)
+        vod = Vod(game,
+                  Platform.query.filter_by(name=platform_name).first(),
+                  Category.query.filter_by(game_id=game.id, name=category_name).first(),
+                  run_time_seconds,
+                  date_completed)
+        if event_name is not None:
+            vod.event = Event.query.filter_by(name=event_name).first()
+        for link_url in link_urls:
+            vod.links.append(VodLink(link_url, vod.id))
+        vod.runners = Participant.query.filter(Participant.handle.in_(runner_handles)).all()
+        vod.commentators = Participant.query.filter(Participant.handle.in_(commentator_handles)).all()
+        return vod
