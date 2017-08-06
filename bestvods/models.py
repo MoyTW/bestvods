@@ -87,10 +87,16 @@ class Platform(Base):
 
 
 class Event(Base):
-    name = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=False, unique=True)
     date_start = db.Column(db.Date, nullable=False)
     date_end = db.Column(db.Date, nullable=False)
     description = db.Column(db.String(2048), nullable=False)
+
+    def __init__(self, name, date_start, date_end, description):
+        self.name = name
+        self.date_start = date_start
+        self.date_end = date_end
+        self.description = description
 
 
 class Participant(Base):

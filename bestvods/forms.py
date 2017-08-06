@@ -94,6 +94,24 @@ class CommentatorsForm(wtforms.Form):
             return True
 
 
+class AddEventForm(wtforms.Form):
+    name = wtforms.StringField('Name', [validators.DataRequired(), validators.Length(max=255)])
+    start_date = wtforms.FormField(DateForm)
+    end_date = wtforms.FormField(DateForm)
+    description = wtforms.StringField('Description', [validators.DataRequired(), validators.Length(max=2048)])
+    add_event = wtforms.SubmitField()
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        if self.start_date.date > self.end_date.date:
+            self.end_date.year.errors.append('Event end date must be after the start date!')
+            return False
+        else:
+            return True
+
+
 class AddVoDForm(wtforms.Form):
     links = wtforms.FormField(LinksForm)
     # This is kind of silly-looking, I admit. Just, like, formatting-wise.

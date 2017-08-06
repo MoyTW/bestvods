@@ -26,6 +26,7 @@ default_config = {
 }
 
 app = create_app(default_config)
+app.register_blueprint(views.events.blueprint, url_prefix='/events')
 app.register_blueprint(views.games.blueprint, url_prefix='/games')
 app.register_blueprint(views.platforms.blueprint, url_prefix='/platforms')
 app.register_blueprint(views.vods.blueprint, url_prefix='/vods')
