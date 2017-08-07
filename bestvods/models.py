@@ -25,6 +25,7 @@ class Role(Base, security.RoleMixin):
 
 class User(Base, security.UserMixin):
     email = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(64), unique=True)
     password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean(), nullable=False)
     roles = db.relationship('Role', secondary=roles_users,
@@ -193,3 +194,27 @@ class Tag(Base):
     def __init__(self, name, description):
         self.name = name
         self.description = description
+
+
+user_recs_tags = db.Table('user_recs_tags',
+                          db.Column('user_rec_id', db.Integer(), db.ForeignKey('user_rec.id')),
+                          db.Column('tag_id', db.Integer(), db.ForeignKey('tag.id')),
+                          db.PrimaryKeyConstraint('user_rec_id', 'tag_id'))
+
+
+class UserRec(Base):
+    description = db.Column(db.String(2048), nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    vod_id = db.Column(db.Integer, db.ForeignKey('vod.id'), nullable=False)
+
+    user = db.relationship('User')
+    vod = db.relationship('Vod')
+
+    tags = db.relationship('Tag', secondary=user_recs_tags, backref=db.backref('recs', lazy='dynamic'))
+
+    def __init__(self, user, vod, description):
+        self.description = description
+
+        self.user = user
+        self.vod = vod

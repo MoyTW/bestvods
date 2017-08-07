@@ -151,13 +151,16 @@ insert into user_rec values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
        '120 star is da best',
        (select id from user where email='one@test.com'),
        (select id from vod where game_id=(select id from game where name='Super Mario 64')));
-insert into user_recs_tags values((select last_insert_rowid()), 'funny');
-insert into user_recs_tags values((select last_insert_rowid()), 'technical');
+insert into user_recs_tags values((select last_insert_rowid()),
+       (select id from tag where name='funny'));
+insert into user_recs_tags values((select last_insert_rowid()),
+       (select id from tag where name='technical'));
 insert into user_rec values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
        'S&P is fun times',
        (select id from user where email='one@test.com'),
        (select id from vod where game_id=(select id from game where name='Freedom Planet')));
-insert into user_recs_tags values((select last_insert_rowid()), 'good commentary');
+insert into user_recs_tags values((select last_insert_rowid()),
+       (select id from tag where name='good commentary'));
 insert into user_rec values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
        'I too like 120 star',
        (select id from user where email='two@test.com'),
