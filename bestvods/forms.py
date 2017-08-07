@@ -94,6 +94,24 @@ class CommentatorsForm(wtforms.Form):
             return True
 
 
+class TagsForm(wtforms.Form):
+    tags = wtforms.FieldList(wtforms.StringField('tag', [validators.DataRequired(),
+                                                         validators.Length(max=512),
+                                                         bestvods.validators.TagExists()]))
+    add_tag = wtforms.SubmitField()
+    remove_tag = wtforms.SubmitField()
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        if len(self.tags.data) > len(frozenset(self.tags.data)):
+            self.tags.errors.append('tags must be unique!')
+            return False
+        else:
+            return True
+
+
 class AddEventForm(wtforms.Form):
     name = wtforms.StringField('Name', [validators.DataRequired(), validators.Length(max=255)])
     start_date = wtforms.FormField(DateForm)
@@ -116,6 +134,13 @@ class AddTagForm(wtforms.Form):
     name = wtforms.StringField('Name', [validators.DataRequired(), validators.Length(max=255)])
     description = wtforms.StringField('Description', [validators.DataRequired(), validators.Length(max=2048)])
     add_tag = wtforms.SubmitField()
+
+
+class AddUserRecForm(wtforms.Form):
+    vod_id = wtforms.IntegerField('VoD ID', [validators.DataRequired(), bestvods.validators.VodExists()])
+    description = wtforms.StringField('Description', [validators.Length(max=2048)])
+    tags = wtforms.FormField(TagsForm)
+    add_user_rec = wtforms.SubmitField()
 
 
 class AddVoDForm(wtforms.Form):

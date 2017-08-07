@@ -181,6 +181,7 @@ create table user_rec (
        user_id integer not null,
        vod_id integer not null,
 
+       unique (user_id, vod_id),
        foreign key (user_id) references user(id),
        foreign key (vod_id) references vod(id)
 );

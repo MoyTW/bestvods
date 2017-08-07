@@ -1,6 +1,6 @@
 import wtforms
 
-from bestvods.models import Game, Platform, Participant, Event
+from bestvods.models import Game, Platform, Participant, Event, Vod, Tag
 
 
 class _RowExists:
@@ -63,3 +63,19 @@ class EventExists(_RowExists):
 
     def _row_missing(self, form, field):
         return Event.query.filter_by(name=field.data).first() is None
+
+
+class TagExists(_RowExists):
+    def __init__(self, allow_empty=False, message=u"Tag not found!"):
+        super().__init__(allow_empty=allow_empty, message=message)
+
+    def _row_missing(self, form, field):
+        return Tag.query.filter_by(name=field.data).first() is None
+
+
+class VodExists(_RowExists):
+    def __init__(self, allow_empty=False, message=u"VoD not found!"):
+        super().__init__(allow_empty=allow_empty, message=message)
+
+    def _row_missing(self, form, field):
+        return Vod.query.filter_by(id=field.data).first() is None

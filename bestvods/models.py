@@ -213,8 +213,19 @@ class UserRec(Base):
 
     tags = db.relationship('Tag', secondary=user_recs_tags, backref=db.backref('recs', lazy='dynamic'))
 
-    def __init__(self, user, vod, description):
+    __table_args__ = (db.UniqueConstraint('user_id', 'vod_id'),)
+
+    def __init__(self, user, vod_id, description, tags):
         self.description = description
+        self.vod_id = vod_id
 
         self.user = user
-        self.vod = vod
+        self.tags = tags
+
+    @staticmethod
+    def create_with_related(username, vod_id: int, description, tag_names: List[str]):
+        user_rec = UserRec(User.query.filter_by(username=username).first(),
+                           vod_id,
+                           description,
+                           Tag.query.filter(Tag.name.in_(tag_names)).all())
+        return user_rec
