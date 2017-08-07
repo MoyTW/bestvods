@@ -7,6 +7,7 @@
           {{ render_field(form.game) }}
           {{ render_field(form.runner) }}
           {{ render_field(form.commentator) }}
+          {{ render_field(form.event) }}
           {{ render_field(form.search) }}
       </div>
   </form>
@@ -28,20 +29,22 @@
             minLength: 1
         });
 
-        $(function() {
-            $("#runner_autocomplete").autocomplete({
-                source: '{{ url_for("participants.root") }}',
-                method: "get",
-                minLength: 1
-            });
+        $("#runner_autocomplete").autocomplete({
+            source: '{{ url_for("participants.root") }}',
+            method: "get",
+            minLength: 1
         });
 
-        $(function() {
-            $("#commentator_autocomplete").autocomplete({
-                source: '{{ url_for("participants.root") }}',
-                method: "get",
-                minLength: 1
-            });
+        $("#commentator_autocomplete").autocomplete({
+            source: '{{ url_for("participants.root") }}',
+            method: "get",
+            minLength: 1
+        });
+
+        $("#event_autocomplete").autocomplete({
+            source: '{{ url_for("events.root") }}',
+            method: "get",
+            minLength: 1
         });
     });
 </script>

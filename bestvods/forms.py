@@ -154,4 +154,7 @@ class SearchVoDsForm(wtforms.Form):
     commentator = wtforms.StringField('Commentator', [validators.Length(max=512),
                                                       bestvods.validators.ParticipantExists(allow_empty=True)],
                                       id='commentator_autocomplete')
+    event = wtforms.StringField('Event', [validators.Length(max=255),
+                                          bestvods.validators.EventExists(allow_empty=True)],
+                                id='event_autocomplete')
     search = wtforms.SubmitField()

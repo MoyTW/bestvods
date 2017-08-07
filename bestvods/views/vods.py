@@ -36,11 +36,12 @@ def search():
         if form.game.data != '':
             name, release_year = Game.parse_name_release_year(form.game.data)
             query = query.filter(Vod.game.has(name=name, release_year=release_year))
-        # TODO: Refine search
         if form.runner.data != '':
-            print('TODO Runner')
+            query = query.filter(Vod.runners.any(handle=form.runner.data))
         if form.commentator.data != '':
-            print('TODO Commentator')
+            query = query.filter(Vod.commentators.any(handle=form.commentator.data))
+        if form.event.data != '':
+            query = query.filter(Vod.event.any(name=form.event.data))
 
         rows = query.all()
         vod_strs = [vod_string(vod) for vod in rows]
