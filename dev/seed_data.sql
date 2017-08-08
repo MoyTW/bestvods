@@ -54,9 +54,9 @@ insert into participant values(null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Succ
 
 -- Events
 delete from event;
-insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ESA 2017', '2017-07-22', '2017-07-29', 'ESA 2017 had two streams!');
-insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'SGDQ 2017', '2017-07-02', '2017-07-09', 'The FF7 run was surprisingly good.');
-insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'AGDQ 2017', '2017-01-08', '2017-01-14', 'AWFUL BLOCK YES');
+insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'TEST_ESA 2017', '2017-07-22', '2017-07-29', 'TEST_ESA 2017 had two streams!');
+insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'TEST_SGDQ 2017', '2017-07-02', '2017-07-09', 'The FF7 run was surprisingly good.');
+insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'TEST_AGDQ 2017', '2017-01-08', '2017-01-14', 'AWFUL BLOCK YES');
 
 -- VoDs
 delete from vod;
@@ -74,7 +74,7 @@ insert into vod values(
        (select id from category where name='120 Star'));
 insert into vods_event values(
        (select id from vod where game_id=(select id from game where name='Super Mario 64')),
-       (select id from event where name='SGDQ 2017'));
+       (select id from event where name='TEST_SGDQ 2017'));
 insert into vods_runners values(
        (select id from vod where game_id=(select id from game where name='Super Mario 64')),
        (select id from participant where handle='Cheese05'));
@@ -102,7 +102,7 @@ insert into vod values(
        (select id from category where name='Any%'));
 insert into vods_event values(
        (select id from vod where game_id=(select id from game where name='Super Panga World')),
-       (select id from event where name='ESA 2017'));
+       (select id from event where name='TEST_ESA 2017'));
 insert into vods_runners values(
        (select last_insert_rowid()),
        (select id from participant where handle='DoDeChehedron'));
@@ -118,7 +118,7 @@ insert into vod values(
        (select id from category where name='Any% Kiln Skip'));
 insert into vods_event values(
        (select id from vod where game_id=(select id from game where name='Dark Souls')),
-       (select id from event where name='AGDQ 2017'));
+       (select id from event where name='TEST_AGDQ 2017'));
 insert into vods_runners values(
        (select last_insert_rowid()),
        (select id from participant where handle='BubblesdelFuego'));

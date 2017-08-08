@@ -12,7 +12,10 @@ init-db:
 	rm dev/bestvods.db
 	sqlite3 dev/bestvods.db < dev/schema.sql
 	sqlite3 dev/bestvods.db < dev/seed_data.sql
-	python3 dev/seed_gdq_vods.py
+	python3 dev/seed_gdq_vods.py ./resources/gdqvods/gdq-vods-agdq-2016-runData.json
+	python3 dev/seed_gdq_vods.py ./resources/gdqvods/gdq-vods-agdq-2017-runData.json
+	python3 dev/seed_gdq_vods.py ./resources/gdqvods/gdq-vods-sgdq-2016-runData.json
+	python3 dev/seed_gdq_vods.py ./resources/gdqvods/gdq-vods-sgdq-2017-runData.json
 
 	rm dev/test.db
 	sqlite3 dev/test.db < dev/schema.sql

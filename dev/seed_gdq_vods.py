@@ -1,13 +1,21 @@
+# DO NOT USE THIS IN PROD
+# 1) You haven't asked the gdqvods dude (which would be polite to do)
+# 2) Data integrity errors in this script:
+#    - TASBot has no Twitch but on line 84
+#    - Youtube link may be omitted on line 111
+
 import datetime
 import json
 import sqlite3
-import itertools
+import sys
 
 
-def take(n, iterable):
-    return list(itertools.islice(iterable, n))
+if len(sys.argv) != 2:
+    print('Second argument must be target file!')
+    sys.exit(0)
+print('Processing ' + sys.argv[1])
 
-with open('./resources/gdq-vods-agdq-2016-runData.json') as data_file:
+with open(sys.argv[1]) as data_file:
     data = json.load(data_file)
 
 conn = sqlite3.connect('./dev/bestvods.db')
@@ -16,6 +24,7 @@ vods = sorted([[item[0], item[1]] for item in data.items()], key=lambda kv: kv[0
 # Insert event
 event_name = vods[0][1]['event']['name']
 event_row = conn.execute('select id from event where name=?', [event_name]).fetchone()
+print(event_name, event_row)
 if event_row is None:
     vod_times = [datetime.datetime.utcfromtimestamp(vod[1]['start_time']).date() for vod in vods]
     params = [event_name, min(vod_times), max(vod_times), event_name]
@@ -99,11 +108,12 @@ for name, vod_json in vods:
     conn.execute('insert into vod_link values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)',
                  [twitch_link, vod_id])
 
-    primary_youtube = vod_json['links']['primary_youtube']
-    youtube_link = 'http://www.youtube.com/watch?time_continue=' + primary_youtube['start'] + \
-                   '&v=' + primary_youtube['id']
-    conn.execute('insert into vod_link values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)',
-                 [youtube_link, vod_id])
+    if 'primary_youtube' in vod_json['links'] and 'start' in vod_json['links']['primary_youtube']:
+        primary_youtube = vod_json['links']['primary_youtube']
+        youtube_link = 'http://www.youtube.com/watch?time_continue=' + primary_youtube['start'] + \
+                       '&v=' + primary_youtube['id']
+        conn.execute('insert into vod_link values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)',
+                     [youtube_link, vod_id])
 
     # Runner(s)
     for runner_id in runner_ids:
