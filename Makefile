@@ -12,6 +12,7 @@ init-db:
 	rm dev/bestvods.db
 	sqlite3 dev/bestvods.db < dev/schema.sql
 	sqlite3 dev/bestvods.db < dev/seed_data.sql
+	python3 dev/seed_gdq_vods.py
 
 	rm dev/test.db
 	sqlite3 dev/test.db < dev/schema.sql
