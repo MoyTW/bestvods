@@ -24,12 +24,12 @@ vods = sorted([[item[0], item[1]] for item in data.items()], key=lambda kv: kv[0
 # Insert event
 event_name = vods[0][1]['event']['name']
 event_row = conn.execute('select id from event where name=?', [event_name]).fetchone()
-print(event_name, event_row)
+#print(event_name, event_row)
 if event_row is None:
     vod_times = [datetime.datetime.utcfromtimestamp(vod[1]['start_time']).date() for vod in vods]
     params = [event_name, min(vod_times), max(vod_times), event_name]
     conn.execute('insert into event values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?, ?, ?)', params)
-    print('Inserted EVENT: ' + str(params))
+    #print('Inserted EVENT: ' + str(params))
     event_id = conn.execute('select last_insert_rowid()').fetchone()[0]
 else:
     raise ValueError('You have already processed this file!')
@@ -38,14 +38,14 @@ for name, vod_json in vods:
     game_name = vod_json['game']['name']
     game_year = vod_json['game']['year']
 
-    print(game_name + ': ' + str(game_year))
+    #print(game_name + ': ' + str(game_year))
 
     # Insert game
     game_row = conn.execute('select id from game where name=? and release_year=?', [game_name, game_year]).fetchone()
     if game_row is None:
         params = [game_name, game_year, game_name + ' was a game released in ' + str(game_year)]
         conn.execute('insert into game values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?, ?)', params)
-        print('    Inserted GAME: ' + str(params))
+        #print('    Inserted GAME: ' + str(params))
         game_id = conn.execute('select last_insert_rowid()').fetchone()[0]
     else:
         game_id = game_row[0]
@@ -59,7 +59,7 @@ for name, vod_json in vods:
     if category_row is None:
         params = [category_name, 'Category Placeholder Description', game_id]
         conn.execute('insert into category values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?, ?)', params)
-        print('    Inserted CATEGORY ' + str(params))
+        #print('    Inserted CATEGORY ' + str(params))
         category_id = conn.execute('select last_insert_rowid()').fetchone()[0]
     else:
         category_id = category_row[0]
@@ -70,7 +70,7 @@ for name, vod_json in vods:
     if platform_row is None:
         params = [platform_name, 'Platform Placeholder Description']
         conn.execute('insert into platform values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)', params)
-        print('    Inserted PLATFORM ' + str(params))
+        #print('    Inserted PLATFORM ' + str(params))
         platform_id = conn.execute('select last_insert_rowid()').fetchone()[0]
     else:
         platform_id = platform_row[0]
@@ -83,7 +83,7 @@ for name, vod_json in vods:
         if runner_row is None:
             params = [runner_name, 'https://twitch.tv/' + runner['twitch'] if 'twitch' in runner else '']
             conn.execute('insert into participant values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)', params)
-            print('    Inserted PARTICIPANT ' + str(params))
+            #print('    Inserted PARTICIPANT ' + str(params))
             runner_ids.append(conn.execute('select last_insert_rowid()').fetchone()[0])
         else:
             runner_ids.append(runner_row[0])
@@ -95,7 +95,7 @@ for name, vod_json in vods:
 
     params = [run_time_seconds, end_date, game_id, platform_id, category_id]
     conn.execute('insert into vod values (null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?)', params)
-    print('    Inserted VOD ' + str(params))
+    #print('    Inserted VOD ' + str(params))
     vod_id = conn.execute('select last_insert_rowid()').fetchone()[0]
 
     # Vod->Event
