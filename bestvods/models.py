@@ -53,7 +53,7 @@ class Game(Base):
     def parse_name_release_year(name_release_year):
         try:
             return [name_release_year[:-6].strip(), int(name_release_year[-6:].strip('()'))]
-        except ValueError:
+        except (ValueError, TypeError):
             return [None, None]
 
     @staticmethod
@@ -185,6 +185,21 @@ class Vod(Base):
         vod.runners = Participant.query.filter(Participant.handle.in_(runner_handles)).all()
         vod.commentators = Participant.query.filter(Participant.handle.in_(commentator_handles)).all()
         return vod
+
+    @staticmethod
+    def query_search(name_release_year, runner_handle, commentator_handle, event_name, limit=100):
+        query = Vod.query
+        if name_release_year is not None and name_release_year != '':
+            name, release_year = Game.parse_name_release_year(name_release_year)
+            query = query.filter(Vod.game.has(name=name, release_year=release_year))
+        if runner_handle is not None and runner_handle != '':
+            query = query.filter(Vod.runners.any(handle=runner_handle))
+        if commentator_handle is not None and commentator_handle != '':
+            query = query.filter(Vod.commentators.any(handle=commentator_handle))
+        if event_name is not None and event_name != '':
+            query = query.filter(Vod.event.any(name=event_name))
+
+        return query.limit(limit).all()
 
 
 class Tag(Base):

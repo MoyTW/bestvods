@@ -32,18 +32,7 @@ def search():
     form = forms.SearchVoDsForm(flask.request.form)
 
     if flask.request.method == 'POST' and form.validate():
-        query = Vod.query
-        if form.game.data != '':
-            name, release_year = Game.parse_name_release_year(form.game.data)
-            query = query.filter(Vod.game.has(name=name, release_year=release_year))
-        if form.runner.data != '':
-            query = query.filter(Vod.runners.any(handle=form.runner.data))
-        if form.commentator.data != '':
-            query = query.filter(Vod.commentators.any(handle=form.commentator.data))
-        if form.event.data != '':
-            query = query.filter(Vod.event.any(name=form.event.data))
-
-        rows = query.all()
+        rows = Vod.query_search(form.game.data, form.runner.data, form.commentator.data, form.event.data)
         vod_strs = [vod_string(vod) for vod in rows]
         return flask.render_template('vod_search.html', form=form, vod_strs=vod_strs)
 
