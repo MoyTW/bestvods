@@ -3,7 +3,7 @@ import flask
 import sqlalchemy.exc
 
 from bestvods.database import db
-from bestvods.models import UserRec, Tag
+from bestvods.models import UserRec, Vod
 from flask_security import login_required
 
 
@@ -45,6 +45,11 @@ def username_add(username):
         elif form.tags.remove_tag.data:
             form.tags.tags.pop_entry()
 
+        elif form.search_form.search.data:
+            rows = Vod.query_search(form.search_form.game.data, form.search_form.runner.data,
+                                    form.search_form.commentator.data, form.search_form.event.data, limit=10)
+            return flask.render_template('rec_add.html', form=form, vod_strs=[str(vod) for vod in rows])
+
         elif form.validate():
             try:
                 user_rec = UserRec.create_with_related(username, form.vod_id.data, form.description.data,
@@ -56,6 +61,5 @@ def username_add(username):
             except sqlalchemy.exc.IntegrityError:
                 flask.flash('You already recommended vod ' + str(form.vod_id.data))
                 return flask.redirect(flask.url_for('recs.username_add', username=username))
-    return flask.render_template('_resource_add.html',
-                                 resource_name='event',
-                                 fields=[form.vod_id, form.description, form.tags, form.add_user_rec])
+
+    return flask.render_template('rec_add.html', form=form)

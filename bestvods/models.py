@@ -168,6 +168,13 @@ class Vod(Base):
         self.platform = platform
         self.category = category
 
+    def __str__(self):
+        return ", ".join(['id: ' + str(self.id),
+                          'game: ' + self.game.name,
+                          'event: ' + self.event[0].name if len(self.event) > 0 else 'No Event',
+                          'runners: [' + ','.join([p.handle for p in self.runners]) + ']',
+                          'commentators: [' + ','.join([p.handle for p in self.commentators]) + ']'])
+
     @staticmethod
     def create_with_related(name_release_year, platform_name, category_name, run_time_seconds, date_completed,
                             event_name, link_urls: List[str], runner_handles: List[str],

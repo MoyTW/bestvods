@@ -136,13 +136,6 @@ class AddTagForm(wtforms.Form):
     add_tag = wtforms.SubmitField()
 
 
-class AddUserRecForm(wtforms.Form):
-    vod_id = wtforms.IntegerField('VoD ID', [validators.DataRequired(), bestvods.validators.VodExists()])
-    description = wtforms.StringField('Description', [validators.Length(max=2048)])
-    tags = wtforms.FormField(TagsForm)
-    add_user_rec = wtforms.SubmitField()
-
-
 class AddVoDForm(wtforms.Form):
     links = wtforms.FormField(LinksForm)
     # This is kind of silly-looking, I admit. Just, like, formatting-wise.
@@ -183,3 +176,11 @@ class SearchVoDsForm(wtforms.Form):
                                           bestvods.validators.EventExists(allow_empty=True)],
                                 id='event_autocomplete')
     search = wtforms.SubmitField()
+
+
+class AddUserRecForm(wtforms.Form):
+    search_form = wtforms.FormField(SearchVoDsForm)
+    vod_id = wtforms.IntegerField('VoD ID', [validators.DataRequired(), bestvods.validators.VodExists()])
+    description = wtforms.StringField('Description', [validators.Length(max=2048)])
+    tags = wtforms.FormField(TagsForm)
+    add_user_rec = wtforms.SubmitField()
