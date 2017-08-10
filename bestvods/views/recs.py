@@ -37,38 +37,20 @@ def list_username(username):
 @blueprint.route('/add/', methods=['GET', 'POST'])
 @login_required
 def add():
-    form = forms.AddUserRecForm(flask.request.form)
+    form = forms.SearchVoDsForm(flask.request.form)
 
-    if flask.request.method == 'POST':
-        if form.tags.add_tag.data:
-            form.tags.tags.append_entry()
-        elif form.tags.remove_tag.data:
-            form.tags.tags.pop_entry()
-
-        elif form.search_form.search.data:
-            rows = Vod.query_search(form.search_form.game.data, form.search_form.runner.data,
-                                    form.search_form.commentator.data, form.search_form.event.data, limit=10)
-            return flask.render_template('rec_add.html', form=form, vod_strs=[str(vod) for vod in rows])
-
-        elif form.validate():
-            username = current_user.username
-            try:
-                user_rec = UserRec.create_with_related(username, form.vod_id.data, form.description.data,
-                                                       form.tags.tags.data)
-                db.session.add(user_rec)
-                db.session.commit()
-                flask.flash('Inserted Rec: ' + str(user_rec.id))
-                return flask.redirect(flask.url_for('recs.add'))
-            except sqlalchemy.exc.IntegrityError:
-                flask.flash('You already recommended vod ' + str(form.vod_id.data))
-                return flask.redirect(flask.url_for('recs.add'))
+    if flask.request.method == 'POST' and form.validate():
+        rows = Vod.query_search(form.game.data, form.runner.data,
+                                form.commentator.data, form.event.data)
+        vod_dicts = [{'desc': str(vod), 'href': flask.url_for('recs.add_vod', vod_id=vod.id)} for vod in rows]
+        return flask.render_template('rec_add.html', form=form, vod_dicts=vod_dicts)
 
     return flask.render_template('rec_add.html', form=form)
 
 
 @blueprint.route('/add/<int:vod_id>', methods=['GET', 'POST'])
 @login_required
-def username_add_vod(vod_id):
+def add_vod(vod_id):
     vod = Vod.query.filter_by(id=vod_id).first()
     if vod is None:
         flask.abort(404)
