@@ -184,3 +184,9 @@ class AddUserRecForm(wtforms.Form):
     description = wtforms.StringField('Description', [validators.Length(max=2048)])
     tags = wtforms.FormField(TagsForm)
     add_user_rec = wtforms.SubmitField()
+
+
+class AddUserRecVodForm(wtforms.Form):
+    description = wtforms.StringField('Description', [validators.Length(max=2048)])
+    tags = wtforms.FormField(TagsForm)
+    add_user_rec = wtforms.SubmitField()

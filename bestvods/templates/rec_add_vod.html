@@ -1,0 +1,28 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "_base.html" %}
+{% block body %}
+  <h2>Add new Rec</h2>
+  <form action="" method="post">
+      <div class="input text">
+          VoD: {{ vod_str }} <br><br>
+          {{ render_field(form.description) }}
+          {{ render_field(form.tags) }}
+          {{ form.add_user_rec }}
+      </div>
+  </form>
+
+<script>
+    $(function() {
+        {% for tag in form.tags.tags %}
+        $(function() {
+            $("#{{ tag.id }}").autocomplete({
+                source: '{{ url_for("tags.root") }}',
+                method: "get",
+                minLength: 1
+            });
+        });
+        {% endfor %}
+    });
+</script>
+
+{% endblock %}
