@@ -7,6 +7,21 @@
 </head>
 <title>BestVoDs</title>
 <div class="page">
+    <div class="topnav" id="myTopnav">
+        <a href="{{ url_for('index.root') }}">Home</a>
+        <a href="{{ url_for('vods.root') }}">VoDs</a>
+        <a href="{{ url_for('participants.root') }}">Runners</a>
+        <a href="{{ url_for('events.root') }}">Events</a>
+        {% if current_user.is_authenticated %}
+            You are logged in as {{ current_user.username }}. <a href="{{ url_for('security.logout') }}">Log out</a>
+            <div class="userBar" id="userBarId">
+                <a href="{{ url_for('recs.list_username', username=current_user.username) }}">My Recommendations</a>
+                <a href="{{ url_for('recs.add') }}">Add Recommendation</a>
+            </div>
+        {% else %}
+            You are not currently logged in. <a href="{{ url_for('security.login') }}">Log in</a>
+        {% endif %}
+    </div>
   <h1>Messages</h1>
   {% for message in get_flashed_messages() %}
     <div class=flash>{{ message }}</div>
