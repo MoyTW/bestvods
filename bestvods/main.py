@@ -26,6 +26,7 @@ default_config = {
 }
 
 app = create_app(default_config)
+app.register_blueprint(views.index.blueprint)
 app.register_blueprint(views.events.blueprint, url_prefix='/events')
 app.register_blueprint(views.games.blueprint, url_prefix='/games')
 app.register_blueprint(views.platforms.blueprint, url_prefix='/platforms')
@@ -38,11 +39,6 @@ app.register_blueprint(views.tags.blueprint, url_prefix='/tags')
 user_datastore = security.SQLAlchemyUserDatastore(db, models.User, models.Role)
 security_manager = security.Security(app, user_datastore)
 
-
-# Views
-@app.route('/')
-def home():
-    return flask.render_template('index.html')
 
 if __name__ == '__main__':
     app.run()
