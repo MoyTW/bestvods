@@ -1,7 +1,12 @@
 import bestvods.validators
 import datetime
+import flask_security.forms as security_forms
 import wtforms
 import wtforms.validators as validators
+
+
+class ExtendedRegisterForm(security_forms.RegisterForm):
+    username = wtforms.StringField('Username', [validators.DataRequired(), validators.Length(min=1, max=255)])
 
 
 class LinksForm(wtforms.Form):

@@ -2,6 +2,7 @@ import os
 import flask
 import flask_security as security
 import bestvods.database
+import bestvods.forms as forms
 import bestvods.models as models
 import bestvods.views as views
 
@@ -22,7 +23,9 @@ default_config = {
     'DEBUG': True,
     'SECRET_KEY': 'super-secret',
     'SECURITY_PASSWORD_SALT': 'not-actually-a-salt',
-    'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + ROOT_DIR + '/../dev/bestvods.db'
+    'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + ROOT_DIR + '/../dev/bestvods.db',
+    'SECURITY_REGISTERABLE': True,
+    'SECURITY_SEND_REGISTER_EMAIL': False
 }
 
 app = create_app(default_config)
@@ -37,7 +40,7 @@ app.register_blueprint(views.tags.blueprint, url_prefix='/tags')
 
 # Setup security
 user_datastore = security.SQLAlchemyUserDatastore(db, models.User, models.Role)
-security_manager = security.Security(app, user_datastore)
+security_manager = security.Security(app, user_datastore, register_form=forms.ExtendedRegisterForm)
 
 
 if __name__ == '__main__':
