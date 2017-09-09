@@ -4,7 +4,29 @@
 
     <div class="row">
         <div class="col-xs-12">
-            Index Content Goes Here
+            Most Popular VoDs
+            <table style="border: 1px solid black;text-align: center; border-spacing: 5px">
+                <tr>
+                    <td>Count</td>
+                    <td>Game</td>
+                    <td>Platform</td>
+                    <td>Category</td>
+                    <td>Event</td>
+                    <td>Runners</td>
+                    <td>Time</td>
+                </tr>
+            {% for row in popular_info %}
+                <tr>
+                    <td>{{ row['count'] }}</td>
+                    <td>{{ row['game'] }}</td>
+                    <td>{{ row['platform'] }}</td>
+                    <td>{{ row['category'] }}</td>
+                    <td>{{ row['event'] }}</td>
+                    <td>{{ row['runners'] }}</td>
+                    <td>{{ row['time'] }}</td>
+                </tr>
+            {% endfor %}
+            </table>
         </div>
     </div>
 
