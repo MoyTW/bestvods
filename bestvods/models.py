@@ -168,6 +168,27 @@ class Vod(Base):
         self.platform = platform
         self.category = category
 
+    @property
+    def runners_string(self):
+        print(self.runners)
+        if len(self.runners) == 1:
+            return self.runners[0].handle
+        elif len(self.runners) == 2:
+            return self.runners[0].handle + ' and ' + self.runners[1].handle
+        else:
+            return self.runners[0].handle + ', ' + self.runners[1].handle + ', and ' + str(len(self.runners) - 2)\
+                   + " others"
+
+    @property
+    def description(self):
+        if len(self.event) > 0:
+            date_string = ' at ' + self.event[0].name
+        else:
+            date_string = ' on ' + str(self.date_completed)
+        return "{0} {1} by {2}".format(self.game.name_release_year,
+                                       date_string,
+                                       self.runners_string)
+
     def __str__(self):
         return ", ".join(['id: ' + str(self.id),
                           'game: ' + self.game.name,

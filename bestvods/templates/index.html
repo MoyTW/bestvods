@@ -28,6 +28,27 @@
             {% endfor %}
             </table>
         </div>
+        <div class="col-xs-12">
+            Newest Recommendations
+            <table style="border: 1px solid black;text-align: center; border-spacing: 5px">
+                <tr>
+                    <td>User</td>
+                    <td>Recommended On</td>
+                    <td>VoD Info</td>
+                    <td>Description</td>
+                    <td>Tags</td>
+                </tr>
+            {% for row in newest_info %}
+                <tr>
+                    <td>{{ row['user'] }}</td>
+                    <td>{{ row['recommended_on'] }}</td>
+                    <td>{{ row['vod_description'] }}</td>
+                    <td>{{ row['user_description'] }}</td>
+                    <td>{{ row['tags'] }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
     </div>
 
 {% endblock %}

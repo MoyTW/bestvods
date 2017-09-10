@@ -5,7 +5,7 @@ from bestvods.models import Vod, UserRec
 
 blueprint = flask.Blueprint('index', __name__, template_folder='templates')
 
-INDEX_RESULT_LIMIT = 2
+INDEX_RESULT_LIMIT = 5
 
 
 @blueprint.route('/', methods=['GET'])
@@ -24,4 +24,13 @@ def root():
                      "runners": [runner.handle for runner in row[0].runners],
                      "time": row[0].run_time_seconds}
                     for row in vod_counts]
-    return flask.render_template('index.html', popular_info=popular_info)
+
+    newest_results = UserRec.query.order_by(UserRec.timestamp_created.desc()).limit(INDEX_RESULT_LIMIT)
+    newest_info = [{"user": row.user.username,
+                    "recommended_on": row.timestamp_created.date(),
+                    "vod_description": row.vod.description,
+                    "user_description": row.description,
+                    "tags": [tag.name for tag in row.tags]}
+                   for row in newest_results]
+
+    return flask.render_template('index.html', popular_info=popular_info, newest_info=newest_info)
