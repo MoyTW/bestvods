@@ -1,6 +1,7 @@
 import os
 import flask
 import flask_security as security
+import bestvods.api as api
 import bestvods.database
 import bestvods.forms as forms
 import bestvods.models as models
@@ -29,6 +30,8 @@ default_config = {
 }
 
 app = create_app(default_config)
+app.register_blueprint(api.games.blueprint, url_prefix='/api/games')
+app.register_blueprint(api.vods.blueprint, url_prefix='/api/vods')
 app.register_blueprint(views.index.blueprint)
 app.register_blueprint(views.events.blueprint, url_prefix='/events')
 app.register_blueprint(views.games.blueprint, url_prefix='/games')
