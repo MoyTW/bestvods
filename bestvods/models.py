@@ -170,7 +170,6 @@ class Vod(Base):
 
     @property
     def runners_string(self):
-        print(self.runners)
         if len(self.runners) == 1:
             return self.runners[0].handle
         elif len(self.runners) == 2:
